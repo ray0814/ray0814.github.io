@@ -69,6 +69,19 @@
 			L.control.layers(baseLayers).addTo(map);
 			baseLayers['臺灣通用電子地圖'].addTo(map);
 			L.control.scale().addTo(map); // 加入比例尺
+
+			// URL to your GPX file or the GPX itself as a XML string.
+			const url = 'https://ray0814.github.io/demo/demo.gpx';
+			const options = {
+				async: true,
+				polyline_options: { color: 'red' },
+			};
+
+			const gpx = new L.GPX(url, options).on('loaded', (e) => {
+				map.fitBounds(e.target.getBounds());
+			}).addTo(map);
+
+
 			const userMarker = L.marker(defaultCenter).addTo(map).bindPopup("預設中心點").openPopup();
 			const userPosDiv = L.DomUtil.create('div', 'mouse-position');
 			userPosDiv.style.marginBottom = '5px';
