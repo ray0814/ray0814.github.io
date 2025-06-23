@@ -4,7 +4,7 @@
 	<title>本地圖磚地圖</title>
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+	<link href="css/leaflet.css" rel="stylesheet">
 	<style>
 	html, body, #map {
 		height: 100%;
@@ -41,7 +41,7 @@
 		cursor: pointer;
 	}
 	</style>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+	<script src="js/proj-2.19.3-src.js"></script>
 </head>
 <body>
 	<div id="map"></div>
@@ -50,7 +50,7 @@
 		<button onclick="searchCoords()">🔍 搜尋座標</button>
 		<button onclick="locateUser()">📍 回到定位</button>
 	</div>
-	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> 
+	<script src="js/leaflet-1.9.3-src.js"></script> 
 	<script src="js/baseLayers2.js"></script> 
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
