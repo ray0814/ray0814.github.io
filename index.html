@@ -42,6 +42,7 @@
 	}
 	</style>
 	<script src="js/proj4-2.19.3-src.js"></script>
+	<script src="js/leaflet-gpx-2.2.0.js"></script>
 </head>
 <body>
 	<div id="map"></div>
@@ -55,7 +56,6 @@
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 			
-			
 			const defaultCenter = [24.439043218408983, 121.7528521305105];
 			window.map = L.map("map").setView(defaultCenter, 16);
 			map.on("mousemove", function(e) {
@@ -66,8 +66,8 @@
 					coordDiv.textContent = `座標：${lat}, ${lng}`;
 				}
 			});
-			baseLayers['臺灣通用電子地圖'].addTo(map);
 			L.control.layers(baseLayers).addTo(map);
+			baseLayers['臺灣通用電子地圖'].addTo(map);
 			L.control.scale().addTo(map); // 加入比例尺
 			const userMarker = L.marker(defaultCenter).addTo(map).bindPopup("預設中心點").openPopup();
 			const userPosDiv = L.DomUtil.create('div', 'mouse-position');
