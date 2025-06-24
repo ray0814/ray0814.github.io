@@ -6,6 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import requests
+from datetime import date
 
 # 定義：從 TGOS 網站取得座標
 def get_coordinates_from_tgos(addr: str):
@@ -30,12 +32,32 @@ def get_coordinates_from_tgos(addr: str):
     finally:
         browser.quit()
 
+today = date.today().strftime("%Y%m%d")
 
 FILE_NAME = r'data/全國5大超商資料集.csv'
+NEW_FILE_NAME = f'data/全國5大超商資料集_{today}.csv'
+
+url = r"https://data.gcis.nat.gov.tw/od/file?oid=C054F05C-0A6B-428C-B388-288BDB0618E4"
+response = requests.get(url, timeout=10)
+with open(NEW_FILE_NAME, "wb") as f:
+    f.write(response.content)
+
 # 讀取 CSV 檔案
 df = pd.read_csv(FILE_NAME)
+ndf = pd.read_csv(NEW_FILE_NAME)
 
+# 定義比對欄位
+key_columns = ["分公司統一編號", "分公司名稱", "分公司地址"]
 
+# 合併比對新舊資料
+merged = ndf.merge(df, on=key_columns, how='left', indicator=True)
+new_rows = merged[merged['_merge'] == 'left_only']
+
+# 篩選出真正的新資料
+new_data_filtered = ndf[ndf[key_columns].isin(new_rows[key_columns].to_dict(orient='list')).all(axis=1)].copy()
+
+# 合併新資料到原始資料
+df = pd.concat([df, new_data_filtered], ignore_index=True)
 
 # 若尚未有緯度與經度欄位，則新增
 if "緯度" not in df.columns:
