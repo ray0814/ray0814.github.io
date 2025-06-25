@@ -24,10 +24,10 @@
         options: {
             position: 'topright',
             title: 'Get image',
-            printControlLabel: '⤵️',
+            printControlLabel: '&#128438;',
             printControlClasses: [],
             printControlTitle: 'Get image',
-            _unicodeClass: 'bigimage-unicode-icon',
+            _unicodeClass: 'polyline-measure-unicode-icon',
             maxScale: 10,
             minScale: 1,
             inputTitle: 'Choose scale:',
@@ -49,7 +49,7 @@
         _click: function (e) {
             this._container.classList.add('leaflet-control-layers-expanded');
             this._containerParams.style.display = '';
-            this._controlPanel.classList.add('bigimage-unicode-icon-disable');
+            this._controlPanel.classList.add('polyline-measure-unicode-icon-disable');
         },
 
         _createControl: function (label, title, classesToAdd, fn, context) {
@@ -74,9 +74,6 @@
             this._container.appendChild(this._containerParams);
 
             this._createControlPanel(classesToAdd, context, label, title, fn);
-
-            L.DomEvent.disableScrollPropagation(this._container);
-            L.DomEvent.disableClickPropagation(this._container);
 
             return this._container;
         },
@@ -123,7 +120,7 @@
             span.addEventListener('click', () => {
                 this._container.classList.remove('leaflet-control-layers-expanded');
                 this._containerParams.style.display = 'none';
-                this._controlPanel.classList.remove('bigimage-unicode-icon-disable');
+                this._controlPanel.classList.remove('polyline-measure-unicode-icon-disable');
             });
 
             this._containerParams.appendChild(span);
@@ -152,7 +149,7 @@
             self._map.eachLayer(function (layer) {
                 promises.push(new Promise((new_resolve) => {
                     try {
-                        if (layer instanceof L.Marker) {
+                        if (layer instanceof L.Marker && layer._icon && layer._icon.src) {
                             self._getMarkerLayer(layer, new_resolve)
                         } else if (layer instanceof L.TileLayer) {
                             self._getTileLayer(layer, new_resolve);
@@ -172,16 +169,12 @@
                     }
                 }));
             });
+
             Promise.all(promises).then(() => {
                 resolve()
             });
         },
 
-        /**
-         * Loads the layer for the map
-         * @param {*} layer 
-         * @param {*} resolve 
-         */
         _getTileLayer: function (layer, resolve) {
             let self = this;
 
@@ -201,6 +194,7 @@
                 let tilePos = originalTilePoint.scaleBy(new L.Point(self.tileSize, self.tileSize)).subtract(self.bounds.min);
 
                 if (tilePoint.y < 0) return;
+
                 promiseArray.push(new Promise(resolve => {
                     self._loadTile(tilePoint, tilePos, layer, resolve);
                 }));
@@ -214,11 +208,10 @@
         _loadTile: function (tilePoint, tilePos, layer, resolve) {
             let self = this;
             let imgIndex = tilePoint.x + ':' + tilePoint.y + ':' + self.zoom;
-            self.tilesImgs[layer._leaflet_id] = {};
             let image = new Image();
             image.crossOrigin = 'Anonymous';
             image.onload = function () {
-                if (!self.tilesImgs[layer._leaflet_id][imgIndex]) self.tilesImgs[layer._leaflet_id][imgIndex] = { img: image, x: tilePos.x, y: tilePos.y, opacity: layer.options.opacity };
+                if (!self.tilesImgs[imgIndex]) self.tilesImgs[imgIndex] = {img: image, x: tilePos.x, y: tilePos.y};
                 resolve();
             };
             image.src = layer.getTileUrl(tilePoint);
@@ -240,19 +233,14 @@
                 pixelPoint.y -= layer.options.icon.options.iconAnchor[1];
             }
 
-            if (!self._pointPositionIsNotCorrect(pixelPoint) && layer._icon.src) {
+            if (!self._pointPositionIsNotCorrect(pixelPoint)) {
                 let image = new Image();
                 image.crossOrigin = 'Anonymous';
-                image.src = layer._icon.src
                 image.onload = function () {
-                    self.markers[layer._leaflet_id] = { img: image, x: pixelPoint.x, y: pixelPoint.y };
+                    self.markers[layer._leaflet_id] = {img: image, x: pixelPoint.x, y: pixelPoint.y};
                     resolve();
                 };
-                return;
-            } else if (!self._pointPositionIsNotCorrect(pixelPoint) && layer._icon.innerHTML && !layer._icon.src) {
-                let html = new Text(layer._icon.innerHTML);
-                self.markers[layer._leaflet_id] = { html: html, x: pixelPoint.x, y: pixelPoint.y };
-                resolve();
+                image.src = layer._icon.src;
             } else {
                 resolve();
             }
@@ -274,7 +262,6 @@
             }
 
             let latlngs = layer.options.fill ? layer._latlngs[0] : layer._latlngs;
-            if (Array.isArray(latlngs[0])) { latlngs = latlngs.flat(); }
             latlngs.forEach((latLng) => {
                 let pixelPoint = self._map.project(latLng);
                 pixelPoint = pixelPoint.subtract(new L.Point(self.bounds.min.x, self.bounds.min.y));
@@ -318,14 +305,6 @@
             if (value.closed) self.ctx.closePath();
 
             this._feelPath(options);
-        },
-
-        _drawText: function (layer, resolve) {
-            let oldColour = this.ctx.fillStyle;
-            this.ctx.font = "regular 16px arial";
-            this.ctx.fillStyle = 'white';
-            this.ctx.fillText(layer.html.nodeValue, layer.x, layer.y)
-            this.ctx.fillStyle = oldColour;
         },
 
         _drawCircle: function (layer, resolve) {
@@ -399,24 +378,17 @@
             let promise = new Promise(function (resolve, reject) {
                 self._getLayers(resolve);
             });
+
             promise.then(() => {
                 return new Promise(((resolve, reject) => {
-                    for (const [key, layer] of Object.entries(self.tilesImgs)) {
-                        for (const [key, value] of Object.entries(layer)) {
-                            self.ctx.globalAlpha = value.opacity;
-                            self.ctx.drawImage(value.img, value.x, value.y, self.tileSize, self.tileSize);
-                            self.ctx.globalAlpha = 1;
-                        }
+                    for (const [key, value] of Object.entries(self.tilesImgs)) {
+                        self.ctx.drawImage(value.img, value.x, value.y, self.tileSize, self.tileSize);
                     }
                     for (const [key, value] of Object.entries(self.path)) {
                         self._drawPath(value);
                     }
                     for (const [key, value] of Object.entries(self.markers)) {
-                        if (!(value instanceof HTMLImageElement) && !value.img) {
-                            self._drawText(value, value.x, value.y);
-                        } else {
-                            self.ctx.drawImage(value.img, value.x, value.y);
-                        }
+                        self.ctx.drawImage(value.img, value.x, value.y);
                     }
                     for (const [key, value] of Object.entries(self.circles)) {
                         self._drawCircle(value);
@@ -426,7 +398,7 @@
             }).then(() => {
                 self.canvas.toBlob(function (blob) {
                     let link = document.createElement('a');
-                    link.download = "mapExport.png";
+                    link.download = "bigImage.png";
                     link.href = URL.createObjectURL(blob);
                     link.click();
                 });
