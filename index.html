@@ -40,8 +40,21 @@
 		font-size: 14px;
 		cursor: pointer;
 	}
+	.crop-box {
+		width: 70px;
+		height: 50px;
+		overflow: hidden;
+	}
+	.crop-box img {
+		max-height: 50px;
+		max-width: 70px;
+		margin: 0px 0px 0px 0px;
+		float:right;
+	}
 	</style>
+	<link rel="stylesheet" href="css/L.Control.Locate.min.css" />
 	<script src="js/proj4-2.19.3-src.js"></script>
+	
 </head>
 <body>
 	<div id="map"></div>
@@ -52,10 +65,12 @@
 	</div>
 	<script src="js/leaflet-1.9.3-src.js"></script> 
 	<script src="js/baseLayers2.js"></script> 
+	<script src="js/L.Control.Locate.min.js"></script>
+	<script src="js/Leaflet.LocationShare.js"></script>
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 			
-			
+			// 預設位置
 			const defaultCenter = [24.439043218408983, 121.7528521305105];
 			window.map = L.map("map").setView(defaultCenter, 16);
 			map.on("mousemove", function(e) {
@@ -66,21 +81,24 @@
 					coordDiv.textContent = `座標：${lat}, ${lng}`;
 				}
 			});
+			// 預設圖層
 			baseLayers['臺灣通用電子地圖'].addTo(map);
+			// 加入圖層
 			L.control.layers(baseLayers).addTo(map);
-			L.control.scale().addTo(map); // 加入比例尺
+			// 加入比例尺
+			L.control.scale().addTo(map); 
+			
+			// 定位使用者座標
+			lc = L.control
+			  .locate({
+				strings: {
+				  title: "Show me where I am, yo!"
+				}
+			  })
+			  .addTo(map);
+  
 			const userMarker = L.marker(defaultCenter).addTo(map).bindPopup("預設中心點").openPopup();
-			const userPosDiv = L.DomUtil.create('div', 'mouse-position');
-			userPosDiv.style.marginBottom = '5px';
-			userPosDiv.style.fontWeight = 'bold';
-			userPosDiv.innerHTML = "使用者座標：無法取得";
-			const userPosControl = L.control({
-				position: 'bottomleft'
-			});
-			userPosControl.onAdd = function() {
-				return userPosDiv;
-			};
-			userPosControl.addTo(map);
+
 			const MousePosition = L.Control.extend({
 				onAdd: function(map) {
 					this._div = L.DomUtil.create('div', 'mouse-position');
@@ -111,37 +129,6 @@
 				userMarker.bindPopup(msg).openPopup();
 			}
 
-			function locateUser() {
-				if (navigator.geolocation) {
-					if (window.isSecureContext) {
-						navigator.geolocation.getCurrentPosition(function(pos) {
-							const lat = pos.coords.latitude;
-							const lng = pos.coords.longitude;
-							userPosDiv.innerHTML = `使用者座標：${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-							map.setView([lat, lng], 16);
-							userMarker.setLatLng([lat, lng]).bindPopup("📍 使用者位置").openPopup();
-						}, function(err) {
-							console.warn(`無法取得定位: ${err.message}`);
-							showMessage("⚠️ 無法取得定位，使用預設位置");
-						}, {
-							enableHighAccuracy: true,
-							timeout: 5000,
-							maximumAge: 0
-						});
-					} else {
-						showMessage("⚠️ 定位功能須 HTTPS 或 localhost 環境");
-					}
-				} else {
-					showMessage("⚠️ 瀏覽器不支援定位功能");
-				}
-			}
-			// 自動偵測手機裝置並嘗試定位
-			function isMobileDevice() {
-				return /Mobi|Android/i.test(navigator.userAgent);
-			}
-			if (isMobileDevice()) {
-				locateUser();
-			}
 			window.searchCoords = function() {
 				const input = document.getElementById('coord-input').value.trim();
 				if (!input) {
@@ -163,7 +150,7 @@
 				userMarker.setLatLng([lat, lng]).bindPopup("🔍 搜尋座標").openPopup();
 				userPosDiv.innerHTML = `使用者座標：${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 			};
-			window.locateUser = locateUser;
+			
 			// Define projections
 			proj4.defs("EPSG:3826", "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
 			proj4.defs("EPSG:3828", "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=clrk66 +units=m +no_defs");
