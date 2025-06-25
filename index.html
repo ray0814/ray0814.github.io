@@ -43,7 +43,7 @@
 	</style>
 	<link rel="stylesheet" href="css/L.Control.Locate.min.css" />
 	<script src="js/proj4-2.19.3-src.js"></script>
-	
+	<link re="stylesheet" href="css/Leaflet.BigImage.min.css" />
 </head>
 <body>
 	<div id="map"></div>
@@ -56,6 +56,7 @@
 	<script src="js/baseLayers2.js"></script> 
 	<script src="js/L.Control.Locate.min.js"></script>
 	<script src="js/bundle.js"></script>
+	<script src="js/Leaflet.BigImage.min.js"></script>
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 			
@@ -78,13 +79,10 @@
 			L.control.scale().addTo(map); 
 			
 			// 定位使用者座標
-			lc = L.control
-			  .locate({
-				strings: {
-				  title: "Show me where I am, yo!"
-				}
-			  })
-			  .addTo(map);
+			lc = L.control.locate({strings: {title: "Show me where I am, yo!"}}).addTo(map);
+
+			L.control.bigImage({position: 'topright'}).addTo(mymap);
+
 			
 			var tiles = baseLayers['臺灣通用電子地圖'];
 			var printer = L.easyPrint({
