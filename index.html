@@ -66,7 +66,6 @@
 	<script src="js/leaflet-1.9.3-src.js"></script> 
 	<script src="js/baseLayers2.js"></script> 
 	<script src="js/L.Control.Locate.min.js"></script>
-	<script src="js/Leaflet.LocationShare.js"></script>
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 			
@@ -148,7 +147,6 @@
 				}
 				map.setView([lat, lng], 16);
 				userMarker.setLatLng([lat, lng]).bindPopup("🔍 搜尋座標").openPopup();
-				userPosDiv.innerHTML = `使用者座標：${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 			};
 			
 			// Define projections
