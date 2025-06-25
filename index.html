@@ -40,17 +40,6 @@
 		font-size: 14px;
 		cursor: pointer;
 	}
-	.crop-box {
-		width: 70px;
-		height: 50px;
-		overflow: hidden;
-	}
-	.crop-box img {
-		max-height: 50px;
-		max-width: 70px;
-		margin: 0px 0px 0px 0px;
-		float:right;
-	}
 	</style>
 	<link rel="stylesheet" href="css/L.Control.Locate.min.css" />
 	<script src="js/proj4-2.19.3-src.js"></script>
@@ -66,6 +55,7 @@
 	<script src="js/leaflet-1.9.3-src.js"></script> 
 	<script src="js/baseLayers2.js"></script> 
 	<script src="js/L.Control.Locate.min.js"></script>
+	<script src="js/bundle.js"></script>
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 			
@@ -95,7 +85,20 @@
 				}
 			  })
 			  .addTo(map);
-  
+			
+			var tiles = baseLayers['臺灣通用電子地圖'];
+			var printer = L.easyPrint({
+				tileLayer: tiles,
+				sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
+				filename: 'myMap',
+				exportOnly: true,
+				hideControlContainer: true
+			}).addTo(map);
+
+			function manualPrint () {
+				printer.printMap('CurrentSize', 'MyManualPrint')
+			}
+
 			const userMarker = L.marker(defaultCenter).addTo(map).bindPopup("預設中心點").openPopup();
 
 			const MousePosition = L.Control.extend({

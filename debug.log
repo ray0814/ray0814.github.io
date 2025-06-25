@@ -1,0 +1,14 @@
+[0625/133738.595:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133738.620:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133738.682:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133738.753:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133740.782:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133747.988:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133750.758:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133752.641:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133756.519:ERROR:crashpad_client_win.cc(869)] not connected
+[0625/133756.857:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133800.486:ERROR:crashpad_client_win.cc(869)] not connected
+[0625/133800.820:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133822.448:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
+[0625/133827.540:ERROR:registration_protocol_win.cc(108)] CreateFile: 系統找不到指定的檔案。 (0x2)
