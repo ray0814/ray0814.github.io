@@ -11,35 +11,6 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException,
 import requests
 
 # 定義：從 TGOS 網站取得座標
-# def get_coordinates_from_tgos(addr: str):
-#     """地址轉換為座標函式"""
-#     url = f"https://map.tgos.tw/TGOSCloudMap?addr={addr}"
-#     options = Options()
-#     options.add_argument("headless")
-#     browser = webdriver.Chrome(options=options)
-#     browser.get(url)
-
-#     try:
-#         browser = webdriver.Chrome(options=options)
-#     except WebDriverException as e:
-#         print(f"無法啟動瀏覽器：{e}")
-#         return None, None
-
-#     try:
-#         wait = WebDriverWait(browser, 10)
-#         location_div = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.fw-normal.text-secondary")))
-#         span_text = location_div.find_element(By.TAG_NAME, "span").text
-#         full_text = location_div.text
-#         coords_text = full_text.replace(span_text, "").strip()
-#         lat, lng = coords_text.split(",")
-#         return lat.strip(), lng.strip()
-#     except Exception as e:
-#         print(f"地址「{addr}」取得座標失敗：{e}")
-#         return None, None
-#     finally:
-#         browser.quit()
-
-# 定義：從 TGOS 網站取得座標
 def get_coordinates_from_tgos(addr: str):
     """地址轉換為座標函式"""
     url = f"https://map.tgos.tw/TGOSCloudMap?addr={addr}"
@@ -79,6 +50,7 @@ def get_coordinates_from_tgos(addr: str):
 
 today = date.today().strftime("%Y%m%d")
 
+# 取得索引資料
 FILE_NAME = r'data/全國5大超商資料集.csv'
 NEW_FILE_NAME = f'data/全國5大超商資料集_{today}.csv'
 
