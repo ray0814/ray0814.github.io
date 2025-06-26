@@ -91,7 +91,35 @@
 
 			// 以下開始為各種外掛
 
-			// 追加 ICON
+			// ICON
+			L.marker([24.4380, 121.747], {icon: L.AwesomeMarkers.icon({icon: 'spinner', prefix: 'fa', markerColor: 'red', spin:true}) }).addTo(map);
+			L.marker([24.4380, 121.748], {icon: L.AwesomeMarkers.icon({icon: 'coffee', prefix: 'fa', markerColor: 'red', iconColor: '#f28f82'}) }).addTo(map);
+			L.marker([24.4380, 121.749], {icon: L.AwesomeMarkers.icon({icon: 'cog', prefix: 'fa', markerColor: 'purple', iconColor: 'black'}) }).addTo(map);
+			L.marker([24.4380, 121.750], {icon: L.AwesomeMarkers.icon({icon: 'glass', prefix: 'fa', markerColor: 'green'}) }).addTo(map);
+			L.marker([24.4380, 121.751], {icon: L.AwesomeMarkers.icon({icon: 'shopping-cart', prefix: 'fa', markerColor: 'blue'}) }).addTo(map);
+			L.marker([24.4380, 121.752], {icon: L.AwesomeMarkers.icon({icon: 'info', prefix: 'fa', markerColor: 'orange'}) }).addTo(map);
+
+			L.marker([24.4380, 121.753], {icon: L.AwesomeMarkers.icon({icon: 'group', prefix: 'fa', markerColor: 'darkred'}) }).addTo(map);
+			L.marker([24.4380, 121.754], {icon: L.AwesomeMarkers.icon({icon: 'arrow-right', prefix: 'fa', markerColor: 'darkblue'}) }).addTo(map);
+			L.marker([24.4380, 121.755], {icon: L.AwesomeMarkers.icon({icon: 'twitter', prefix: 'fa', markerColor: 'cadetblue'}) }).addTo(map);
+			L.marker([24.4380, 121.756], {icon: L.AwesomeMarkers.icon({icon: 'phone', prefix: 'fa', markerColor: 'darkpurple'}) }).addTo(map);
+			L.marker([24.4380, 121.757], {icon: L.AwesomeMarkers.icon({icon: 'ambulance', prefix: 'fa', markerColor: 'darkgreen'}) }).addTo(map);
+			L.marker([24.4380, 121.758], {icon: L.AwesomeMarkers.icon({icon: 'medkit', prefix: 'fa', markerColor: 'darkblue'}) }).addTo(map);
+
+			L.marker([24.4370, 121.747], {icon: L.AwesomeMarkers.icon({icon: 'link', prefix: 'glyphicon', markerColor: 'red', spin:true}) }).addTo(map);
+			L.marker([24.4370, 121.748], {icon: L.AwesomeMarkers.icon({icon: 'certificate', prefix: 'glyphicon', markerColor: 'red'}) }).addTo(map);
+			L.marker([24.4370, 121.749], {icon: L.AwesomeMarkers.icon({icon: 'cog', prefix: 'glyphicon', markerColor: 'purple'}) }).addTo(map);
+			L.marker([24.4370, 121.750], {icon: L.AwesomeMarkers.icon({icon: 'send', prefix: 'glyphicon', markerColor: 'green'}) }).addTo(map);
+			L.marker([24.4370, 121.751], {icon: L.AwesomeMarkers.icon({icon: 'star', prefix: 'glyphicon', markerColor: 'blue', iconColor: 'black'}) }).addTo(map);
+			L.marker([24.4370, 121.752], {icon: L.AwesomeMarkers.icon({icon: 'tags', prefix: 'fa', markerColor: 'orange'}) }).addTo(map);
+
+			L.marker([24.4370, 121.753], {icon: L.AwesomeMarkers.icon({icon: 'bookmark', prefix: 'fa', markerColor: 'darkred'}) }).addTo(map);
+			L.marker([24.4370, 121.754], {icon: L.AwesomeMarkers.icon({icon: 'picture-o', prefix: 'fa', markerColor: 'darkblue'}) }).addTo(map);
+			L.marker([24.4370, 121.755], {icon: L.AwesomeMarkers.icon({icon: 'move', prefix: 'fa', markerColor: 'cadetblue'}) }).addTo(map);
+			L.marker([24.4370, 121.756], {icon: L.AwesomeMarkers.icon({icon: 'play', prefix: 'fa', markerColor: 'darkpurple'}) }).addTo(map);
+			L.marker([24.4370, 121.757], {icon: L.AwesomeMarkers.icon({icon: 'barcode', prefix: 'fa', markerColor: 'darkgreen'}) }).addTo(map);
+			L.marker([24.4370, 121.758], {icon: L.AwesomeMarkers.icon({icon: 'inbox', prefix: 'fa', markerColor: 'darkblue'}) }).addTo(map);
+
 			function addMarker(Lat, Lng, Icon, Prefix, MarkerColor, IconColor, Spin) {
 				const marker = L.marker([Lat, Lng], {
 					icon: L.AwesomeMarkers.icon({
@@ -103,7 +131,7 @@
 					}).addTo(map);
 				return marker;
 			}
-			// ICON 追加方式
+
 			addMarker(24.4360, 121.747, 'link', 'glyphicon', 'red', '', true);
 
 			// 加入比例尺
