@@ -10,6 +10,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
 import requests
 
+# https://map.tgos.tw/TGOSCloudMap?addr=新竹縣關西鎮東安里中山東路26號
+# https://map.tgos.tw/TGOSCloudMap?addr=高雄市前金區五福三路54號1樓
+
 # 定義：從 TGOS 網站取得座標
 def get_coordinates_from_tgos(addr: str):
     """地址轉換為座標函式"""
@@ -27,6 +30,16 @@ def get_coordinates_from_tgos(addr: str):
     try:
         browser.get(url)
         wait = WebDriverWait(browser, 10)
+
+        location_div = wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "body > div:nth-child(45) > div > div > div.modal-body > div"))
+            )
+
+        # 判斷是否包含指定字串
+        if "搜尋不到任何地址" in location_div.text:
+            print(f"地址「{addr}」查無座標資料。")
+            return 0, 0
+
         location_div = wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "div.fw-normal.text-secondary"))
             )
@@ -92,6 +105,10 @@ NEW_PROCESSED_COUNT = 0
 
 for idx, row in df.iterrows():
     if pd.notna(row["緯度"]) and pd.notna(row["經度"]) and row["緯度"] != "" and row["經度"] != "":
+        print(f"⏩ 第 {idx + 1}/{total_rows} 筆已有座標，略過。")
+        continue
+
+    if row["緯度"] == 0 and row["經度"] == 0:
         print(f"⏩ 第 {idx + 1}/{total_rows} 筆已有座標，略過。")
         continue
 

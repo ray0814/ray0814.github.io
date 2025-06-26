@@ -30,7 +30,7 @@ baseLayers['臺灣通用電子地圖透明'] = L.tileLayer('https://wmts.nlsc.go
 		  maxZoom: 19,
 		  attribution: '© NLSC Taiwan'
 		});
-baseLayers['臺灣通用電子地圖(套疊等高線)OpenData, 最大比例尺一萬八千分之一'] = L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP5_OPENDATA/default/GoogleMapsCompatible/{z}/{y}/{x}.jpeg', {
+baseLayers['臺灣通用電子地圖(套疊等高線) 1/18,000'] = L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP5_OPENDATA/default/GoogleMapsCompatible/{z}/{y}/{x}.jpeg', {
 		  tileSize: 256,
 		  maxZoom: 19,
 		  attribution: '© NLSC Taiwan'
@@ -40,7 +40,7 @@ baseLayers['臺灣通用電子地圖(等高線+門牌)'] = L.tileLayer('https://
 		  maxZoom: 19,
 		  attribution: '© NLSC Taiwan'
 		});
-baseLayers['臺灣通用電子地圖(不含等高線)OpenData, 最大比例尺一萬八千分之一'] = L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP6_OPENDATA/default/GoogleMapsCompatible/{z}/{y}/{x}.jpeg', {
+baseLayers['臺灣通用電子地圖(不含等高線) 1/18,000'] = L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP6_OPENDATA/default/GoogleMapsCompatible/{z}/{y}/{x}.jpeg', {
 		  tileSize: 256,
 		  maxZoom: 19,
 		  attribution: '© NLSC Taiwan'

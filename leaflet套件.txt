@@ -1,0 +1,65 @@
+v, https://github.com/domoritz/leaflet-locatecontrol
+x, https://github.com/hersle/leaflet-route-print
+x, https://github.com/Igor-Vladyka/leaflet.browser.print
+v, https://github.com/rowanwins/leaflet-easyPrint
+v, https://github.com/pasichnykvasyl/Leaflet.BigImage
+x, https://github.com/turbo87/sidebar-v2/
+x, https://github.com/MrMufflon/Leaflet.Coordinates
+x, https://github.com/gokertanrisever/leaflet-ruler
+x, https://github.com/ljagis/leaflet-measure
+v, https://github.com/ppete2/Leaflet.PolylineMeasure
+https://github.com/jieter/Leaflet.Sync
+v, https://github.com/Norkart/Leaflet-MiniMap
+https://github.com/Leaflet/Leaflet.fullscreen
+https://github.com/brunob/leaflet.fullscreen
+x, https://github.com/w8r/Leaflet.Bookmarks
+https://github.com/ismyrnow/leaflet-groupedlayercontrol
+https://github.com/stefanocudini/leaflet-search
+c, https://github.com/hallahan/LeafletPlayback
+https://github.com/linghuam/Leaflet.TrackPlayBack
+https://github.com/skeate/Leaflet.timeline
+https://github.com/GIScience/Leaflet.Heightgraph
+https://github.com/MrMufflon/Leaflet.Elevation
+https://github.com/JamesLMilner/terra-draw
+https://github.com/Wildhoney/Leaflet.FreeDraw
+https://github.com/Leaflet/Leaflet.draw
+v, https://github.com/geoman-io/leaflet-geoman
+https://github.com/jwasilgeo/Leaflet.Canvas-Flowmap-Layer
+https://github.com/domoritz/leaflet-maskcanvas
+https://github.com/sunng87/heatcanvas
+https://github.com/Leaflet/Leaflet.heat
+https://github.com/SINTEF-9012/PruneCluster
+https://github.com/Leaflet/Leaflet.markercluster
+https://github.com/oliverroick/Leaflet.Deflate
+https://github.com/weijun-lab/Leaflet.TrackPlayer
+https://github.com/ggolikov/Leaflet.Rain
+https://github.com/IvanSanchez/Leaflet.Polyline.SnakeAnim
+https://github.com/rubenspgcavalcante/leaflet-ant-path
+https://github.com/Thomas2077/leaflet-marker-direction
+https://github.com/mapshakers/leaflet-icon-pulse
+https://github.com/timwis/leaflet-choropleth
+https://github.com/3mapslab/Leaflet.streetlabels
+https://github.com/zhuang-hao-ming/Leaflet.RoughCanvas
+https://github.com/bbecquet/Leaflet.PolylineDecorator
+https://github.com/bgx1012/leaflet-polygon-fillPattern-canvas
+https://github.com/iDerekLi/Leaflet.CustomLayer
+v, https://github.com/lennardv2/Leaflet.awesome-markers
+https://github.com/masajid390/BeautifyMarker
+https://github.com/windycom/API
+https://github.com/KrausMatthias/Leaflet.TimeDimension.Rainviewer
+https://github.com/perliedman/leaflet-realtime
+https://github.com/BenjaminVadant/leaflet-ugeojson
+https://github.com/joker-x/Leaflet.geoCSV
+https://github.com/makinacorpus/Leaflet.FileLayer
+https://github.com/allartk/leaflet.offline
+https://github.com/dayjournal/Leaflet.Control.Opacity
+https://github.com/digidem/leaflet-side-by-side
+https://github.com/dj0001/Leaflet.mytrack
+https://github.com/tinuzz/leaflet-liveupdate
+https://github.com/ATran31/Leaflet-GeoSSE
+https://github.com/calvinmetcalf/leaflet-ajax
+https://github.com/mapbox/leaflet-omnivore
+https://github.com/windycom/leaflet-kml
+https://github.com/daniellsu/leaflet-betterscale
+https://github.com/mfhsieh/leaflet-multi-markers
+https://github.com/mpetazzoni/leaflet-gpx
