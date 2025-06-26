@@ -54,10 +54,12 @@
 	<script src="js/baseLayers2.js"></script> 
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
-			
-			
 			const defaultCenter = [24.439043218408983, 121.7528521305105];
 			window.map = L.map("map").setView(defaultCenter, 16);
+			baseLayers['臺灣通用電子地圖'].addTo(map);
+			L.control.layers(baseLayers).addTo(map);
+			L.control.scale().addTo(map); // 加入比例尺
+
 			map.on("mousemove", function(e) {
 				const lat = e.latlng.lat.toFixed(6);
 				const lng = e.latlng.lng.toFixed(6);
@@ -66,21 +68,16 @@
 					coordDiv.textContent = `座標：${lat}, ${lng}`;
 				}
 			});
-			baseLayers['臺灣通用電子地圖'].addTo(map);
-			L.control.layers(baseLayers).addTo(map);
-			L.control.scale().addTo(map); // 加入比例尺
+			
 			const userMarker = L.marker(defaultCenter).addTo(map).bindPopup("預設中心點").openPopup();
 			const userPosDiv = L.DomUtil.create('div', 'mouse-position');
 			userPosDiv.style.marginBottom = '5px';
 			userPosDiv.style.fontWeight = 'bold';
 			userPosDiv.innerHTML = "使用者座標：無法取得";
-			const userPosControl = L.control({
-				position: 'bottomleft'
-			});
-			userPosControl.onAdd = function() {
-				return userPosDiv;
-			};
+			const userPosControl = L.control({ position: 'bottomleft' });
+			userPosControl.onAdd = () => userPosDiv;
 			userPosControl.addTo(map);
+			
 			const MousePosition = L.Control.extend({
 				onAdd: function(map) {
 					this._div = L.DomUtil.create('div', 'mouse-position');
@@ -135,13 +132,9 @@
 					showMessage("⚠️ 瀏覽器不支援定位功能");
 				}
 			}
-			// 自動偵測手機裝置並嘗試定位
-			function isMobileDevice() {
-				return /Mobi|Android/i.test(navigator.userAgent);
-			}
-			if (isMobileDevice()) {
-				locateUser();
-			}
+			
+			locateUser();
+
 			window.searchCoords = function() {
 				const input = document.getElementById('coord-input').value.trim();
 				if (!input) {

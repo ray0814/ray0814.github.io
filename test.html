@@ -85,6 +85,43 @@
 					coordDiv.textContent = `座標：${lat}, ${lng}`;
 				}
 			});
+			// 使用者位置
+			const userMarker = L.marker(defaultCenter).addTo(map).bindPopup("預設中心點").openPopup();
+			const userPosDiv = L.DomUtil.create('div', 'mouse-position');
+			userPosDiv.style.marginBottom = '5px';
+			userPosDiv.style.fontWeight = 'bold';
+			// userPosDiv.innerHTML = "使用者座標：無法取得";
+			const userPosControl = L.control({ position: 'bottomleft' });
+			userPosControl.onAdd = () => userPosDiv;
+			userPosControl.addTo(map);
+
+			function locateUser() {
+				if (navigator.geolocation) {
+					if (window.isSecureContext) {
+						navigator.geolocation.getCurrentPosition(function(pos) {
+							const lat = pos.coords.latitude;
+							const lng = pos.coords.longitude;
+							// userPosDiv.innerHTML = `使用者座標：${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+							map.setView([lat, lng], 16);
+							userMarker.setLatLng([lat, lng]).bindPopup("📍 使用者位置").openPopup();
+						}, function(err) {
+							console.warn(`無法取得定位: ${err.message}`);
+							showMessage("⚠️ 無法取得定位，使用預設位置");
+						}, {
+							enableHighAccuracy: true,
+							timeout: 5000,
+							maximumAge: 0
+						});
+					} else {
+						showMessage("⚠️ 定位功能須 HTTPS 或 localhost 環境");
+					}
+				} else {
+					showMessage("⚠️ 瀏覽器不支援定位功能");
+				}
+			}
+			
+			locateUser();
+
 			// 預設圖層
 			baseLayers['臺灣通用電子地圖'].addTo(map);
 			// 加入圖層
@@ -196,7 +233,8 @@
 					fillOpacity: 1,             // Fill opacity of the circle
 					radius: 3                   // Radius of the circle
 				},
-			};			
+			};
+
 			L.control.polylineMeasure(options).addTo(map);
 
 			map.pm.addControls({  
@@ -204,12 +242,6 @@
 				drawCircleMarker: false,
 				rotateMode: false,
 				}); 
-
-			function manualPrint () {
-				printer.printMap('CurrentSize', 'MyManualPrint')
-			}
-
-			const userMarker = L.marker(defaultCenter).addTo(map).bindPopup("預設中心點").openPopup();
 
 			const MousePosition = L.Control.extend({
 				onAdd: function(map) {
@@ -232,14 +264,14 @@
 					this._div.innerHTML = `座標：${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
 				}
 			});
-			const mousePositionControl = new MousePosition({
-				position: 'bottomleft'
-			});
-			mousePositionControl.addTo(map);
+
+			const mousePositionControl = new MousePosition({position: 'bottomleft'}).addTo(map);
 
 			function showMessage(msg) {
 				userMarker.bindPopup(msg).openPopup();
 			}
+
+			
 
 			window.searchCoords = function() {
 				const input = document.getElementById('coord-input').value.trim();
