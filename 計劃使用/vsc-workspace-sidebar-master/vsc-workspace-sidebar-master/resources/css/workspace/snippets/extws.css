@@ -1,0 +1,9 @@
+.list__extws {
+  position: relative;
+}
+
+.list__extws-title {
+  margin: 0.7rem 0;
+  padding: 0 var(--ext-workspace-sidebar__padding-h);
+  padding-top: 0.5rem;
+}

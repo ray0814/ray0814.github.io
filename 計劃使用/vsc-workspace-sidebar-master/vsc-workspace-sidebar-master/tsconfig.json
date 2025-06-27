@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "experimentalDecorators": false,
+    "forceConsistentCasingInFileNames": false,
+    "lib": ["es6", "dom", "es2019"],
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "outDir": "test",
+    "rootDir": "src",
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "es6"
+  },
+  "exclude": [
+    ".cache",
+    ".vscode-test",
+    "/test",
+    "build/",
+    "dist/",
+    "node_modules/",
+    "out/",
+    "resources/js/**/*"
+  ],
+  "include": ["src/**/*"]
+}

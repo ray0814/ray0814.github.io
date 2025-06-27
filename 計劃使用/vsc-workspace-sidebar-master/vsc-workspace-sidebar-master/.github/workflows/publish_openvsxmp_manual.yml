@@ -1,0 +1,27 @@
+# Publish this VSCode Extension to the OpenVSX Marketplace
+
+name: Publish to Open VSX Marketplace (Manual)
+on:
+  workflow_dispatch:
+jobs:
+  openvsx:
+    name: OpenVSX Marketplace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '${{ vars.NODE_VERSION }}'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Install Ovsx
+        run: npm i -g ovsx
+
+      - name: Publish to OpenVSX Marketplace
+        run: ovsx publish --yarn -p ${{ secrets.OPENVSX_TOKEN }}

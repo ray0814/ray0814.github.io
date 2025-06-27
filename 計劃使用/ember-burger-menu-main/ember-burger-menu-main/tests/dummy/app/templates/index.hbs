@@ -1,0 +1,209 @@
+<BurgerMenu
+  @translucentOverlay={{this.translucentOverlay}}
+  @dismissOnClick={{this.dismissOnClick}}
+  @dismissOnEsc={{this.dismissOnEsc}}
+  @gesturesEnabled={{this.gesturesEnabled}}
+  @animation={{this.animation}}
+  @itemAnimation={{this.itemAnimation}}
+  @position={{this.position}}
+  @locked={{this.locked}} as |burger|
+>
+  <burger.menu @itemTagName='li' @dismissOnItemClick={{true}} as |menu|>
+    <a
+      class='close {{burger.state.position}}'
+      role='button'
+      {{on 'click' burger.state.closeMenu}}
+    >
+      <FaIcon @icon='times' />
+    </a>
+
+    <h2>
+      <FaIcon @icon='bars' aria-hidden='true' />
+      Menu
+    </h2>
+
+    <DummyMenu @menu={{menu}} />
+  </burger.menu>
+
+  <burger.outlet>
+    <a
+      class='hamburger {{burger.state.position}} {{
+        if burger.state.open 'burger-hidden'
+      }}'
+      role='button'
+      {{on 'click' burger.state.toggleMenu}}
+    >
+      <FaIcon @icon='bars' aria-hidden='true' />
+    </a>
+    <main class='text-center'>
+      <DummyHeader />
+
+      <div class='content'>
+        <div class='container'>
+          <div class='row'>
+            <div class='col-sm-6 animations text-right'>
+              <h4>
+                Animations
+              </h4>
+              {{#each this.animations as |animation|}}
+                <button
+                  class='btn btn-default btn-outline {{
+                    if (eq animation burger.state.animation) 'active'
+                  }}'
+                  type='button'
+                  {{on 'click' (fn this.setMenu 'animation' animation)}}
+                >
+                  {{titleize (dedasherize animation)}}
+                </button>
+              {{/each}}
+
+              <h4>
+                Item Animations
+              </h4>
+              <button
+                class='btn btn-default btn-outline {{
+                  unless burger.state.itemAnimation 'active'
+                }}'
+                type='button'
+                {{on 'click' (fn this.setMenu 'itemAnimation' null)}}
+              >
+                None
+              </button>
+              {{#each this.itemAnimations as |animation|}}
+                <button
+                  class='btn btn-default btn-outline {{
+                    if (eq animation burger.state.itemAnimation) 'active'
+                  }}'
+                  type='button'
+                  {{on 'click' (fn this.setMenu 'itemAnimation' animation)}}
+                >
+                  {{titleize (dedasherize animation)}}
+                </button>
+              {{/each}}
+            </div>
+
+            <div class='col-sm-6 options text-left'>
+              <h4>
+                Options
+              </h4>
+
+              <div class='option'>
+                <label for='position'>
+                  Position
+                </label>
+                <div class='btn-group' role='group' id='position'>
+                  {{#each (array 'left' 'right') as |position|}}
+                    <button
+                      type='button'
+                      class='btn btn-default btn-outline {{
+                        if (eq position burger.state.position) 'active'
+                      }}'
+                      {{on 'click' (fn this.setMenu 'position' position)}}
+                    >
+                      {{titleize position}}
+                    </button>
+                  {{/each}}
+                </div>
+              </div>
+
+              <div class='option'>
+                <label for='locked'>
+                  Locked
+                </label>
+                <a
+                  id='locked'
+                  class='checkbox'
+                  role='checkbox'
+                  {{on 'click' (toggle 'locked' this)}}
+                >
+                  <FaIcon
+                    @icon={{if this.locked 'check-square' 'square'}}
+                    aria-hidden='true'
+                  />
+                </a>
+              </div>
+
+              <div class='option'>
+                <label for='translucentOverlay'>
+                  Translucent Overlay
+                </label>
+                <a
+                  id='translucentOverlay'
+                  class='checkbox'
+                  role='checkbox'
+                  {{on 'click' (toggle 'translucentOverlay' this)}}
+                >
+                  <FaIcon
+                    @icon={{if this.translucentOverlay 'check-square' 'square'}}
+                    aria-hidden='true'
+                  />
+                </a>
+              </div>
+
+              <div class='option'>
+                <label for='dismissOnClick'>
+                  Dismiss on Click
+                </label>
+                <a
+                  id='dismissOnClick'
+                  class='checkbox'
+                  role='checkbox'
+                  {{on 'click' (toggle 'dismissOnClick' this)}}
+                >
+                  <FaIcon
+                    @icon={{if this.dismissOnClick 'check-square' 'square'}}
+                    aria-hidden='true'
+                  />
+                </a>
+              </div>
+
+              <div class='option'>
+                <label for='dismissOnEsc'>
+                  Dismiss on Escape
+                </label>
+                <a
+                  id='dismissOnEsc'
+                  class='checkbox'
+                  role='checkbox'
+                  {{on 'click' (toggle 'dismissOnEsc' this)}}
+                >
+                  <FaIcon
+                    @icon={{if this.dismissOnEsc 'check-square' 'square'}}
+                    aria-hidden='true'
+                  />
+                </a>
+              </div>
+
+              <div class='option'>
+                <label for='gesturesEnabled'>
+                  Gestures Enabled
+                </label>
+                <a
+                  id='gesturesEnabled'
+                  class='checkbox'
+                  role='checkbox'
+                  {{on 'click' (toggle 'gesturesEnabled' this)}}
+                >
+                  <FaIcon
+                    @icon={{if this.gesturesEnabled 'check-square' 'square'}}
+                    aria-hidden='true'
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <DummyInspiration />
+      </div>
+    </main>
+  </burger.outlet>
+
+  <img
+    src='images/tomster.png'
+    class='tomster {{burger.state.position}}'
+    width='175px'
+    ondragstart='return false;'
+    alt='Tomster'
+  />
+</BurgerMenu>

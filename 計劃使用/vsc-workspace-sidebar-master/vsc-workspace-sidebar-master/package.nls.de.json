@@ -1,0 +1,148 @@
+{
+  "config.actions.cur-window": "Im aktuellen Fenster öffnen, Iconklicks werden in einem neuen Fenster geöffnet.",
+  "config.actions.description": "Welche Aktion sollte beim Anklicken auf einen Arbeitsbereich ausgeführt werden?",
+  "config.actions.new-window": "Im neuen Fenster öffnen, Iconklicks werden im aktuellen Fenster geöffnet.",
+  "config.cleanLabels.description": "Pfade in Title Case formattieren. Deaktivieren Sie die Option, um die Namen der Arbeitsbereichsdateien unverändert zu lassen.",
+  "config.condenseFileTree.markdownDescription": "Komprimieren Sie der Ordnerhierarchie, um visuelles Störunegn von Ordnern zu reduzieren [Weitere Informationen finden Sie in der Dokumentation (Englisch)](https://github.com/sketchbuch/vsc-workspace-sidebar/blob/master/docs/Configuration.md#condense-folders).",
+  "config.depth.description": "Wie weit Unterordner auch durchsucht werden. Nummernkreis: 0-25",
+  "config.excludeHiddenFolders.description": "Schließen Sie versteckte Unterordner bei der Suche nach Arbeitsbereichen aus. Dies kann die Suche beschleunigen.",
+  "config.focusExplorer.description": "Wechseln zur Explorer-Ansicht, nachdem Sie einen Arbeitsbereich in einem neuen Fenster geöffnet haben",
+  "config.folder.deprecationMessage": "Es werden jetzt mehrere Stammordner unterstützt. Bitte verwenden Sie stattdessen 'workspaceSidebar.rootFolders'. Diese Option wird in einer zukünftigen Version entfernt.",
+  "config.folder.description": "Der Ordnerpfad, in dem nach Arbeitsbereichen gesucht werden soll. Falls leer, wird Ihr Home-Ordner benutzt.",
+  "config.folders.excluded.markdownDescription": "Unterordner, die bei der Suche nach Arbeitsbereichen ausgeschlossen werden sollen. Beispiel: ```['folder', 'subfolder', '.hidden_folder']```",
+  "config.rootFolders.markdownDescription": "Die Ordner, in denen nach Arbeitsbereichsdateien gesucht werden soll.\n\nBeispiel: ```[\n{ \"path\": \"/home/user/dev\", \"excludeHiddenFolders\": false},\n{ \"path\": \"/home/user/projects\", \"depth\": 2}\n]```\n\nBeispiel (Windows): ```[\n{ \"path\": \"C:\\Users\\User\\Apps\", \"excludeHiddenFolders\": false},\n{ \"path\": \"Z:\\VM Dev\\vsc\", \"depth\": 2}\n]```\n\n- **path** *string* (erforderlich): Der absolute Pfad zum Ordner, es gibt keine Variablenersetzung, aber '~/' kann auf Mac und Linux anstelle von '/home/user' verwendet werden.\n\n- **depth** *int* (optional): Überschreibt und wirkt wie `#workspaceSidebar.depth#`.\n\n- **excludeHiddenFolders** *boolean* (optional): Überschreibt und wirkt wie `#workspaceSidebar.excludeHiddenFolders#`.\n\n[Weitere Informationen finden Sie in der Dokumentation (Englisch)](https://github.com/sketchbuch/vsc-workspace-sidebar/blob/master/docs/Configuration.md#root-folders)",
+  "config.search.caseInsensitive.description": "Suche ohne Berücksichtigung der Groß- und Kleinschreibung",
+  "config.search.matchStart.description": "Suche vom Anfang des Arbeitsbereichsnamens",
+  "config.showFileIcons.markdownDescription": "*EXPERIMENTELLE FUNKTION*. Dateisymbole neben Arbeitsbereichen anzeigen, passende icons wird automatisch gefunden, kann aber auch konfiguriert werden. [Weitere Informationen finden Sie in der Dokumentation (Englisch)](https://github.com/sketchbuch/vsc-workspace-sidebar/blob/master/docs/File%20Icon%20Themes.md).",
+  "config.showFileIconsConfig.markdownDescription": "*EXPERIMENTELLE FUNKTION*. Benutzerdefinierte Konfiguration für Symbole. [Weitere Informationen finden Sie in der Dokumentation (Englisch)](https://github.com/sketchbuch/vsc-workspace-sidebar/blob/master/docs/Configuration.md#show-file-icons-config).\n\nBeispiel: ```{ \"react\": [\"rjs\"], \"ts\": [\"vsc\", \"vscode\", \"electron\", \"todo\"], \"typescript\": [\"ts\", \"vsc\", \"vscode\"], \"yaml\": [\"ansible\"], \"yml\": [\"ansible\"] }```",
+  "config.showFolderHierarchy.description": "Ordnerhierarchie statt einer flachen Liste anzeigen.",
+  "config.showPaths.always": "Pfade immer anzeigen",
+  "config.showPaths.asneeded": "Pfade anzeigen, wenn ein Arbeitsbereich dieselbe Bezeichnung wie eine anderer hat",
+  "config.showPaths.description": "Zeigen Sie Pfade zu den Arbeitsbereichsdateien an. Entweder: 'Immer', 'Nie', oder 'Nach Bedarf' (zeigt nur Pfade für Arbeitsbereiche mit derselben Bezeichnung an).",
+  "config.showPaths.never": "Pfade nie anzeigen",
+  "config.title.folders": "Ordner",
+  "config.title.search": "Suche",
+  "config.title.treeview": "Ordnerhierarchie Ansicht",
+  "config.title": "Workspace Sidebar",
+  "ext.cmd.wsList.collapse-all": "Ordner zuklappen",
+  "ext.cmd.wsList.expand-all": "Ordner aufklappen",
+  "ext.cmd.wsList.refetch": "Arbeitsbereiche neu einsammeln",
+  "ext.cmd.wsListItem.checkSettings": "Überprüfen Sie die Erweiterungseinstellungen",
+  "ext.cmd.wsListItem.open.curWindow": "In aktuellem Fenster öffnen",
+  "ext.cmd.wsListItem.open.newWindow": "In neuem Fenster öffnen",
+  "views.title": "Arbeitsbereiche",
+  "viewsContainers.activitybar.title": "Arbeitsbereiche",
+  "errors": {
+    "viewNotFound": "Workspace Sidebar: WebviewView nicht gefunden"
+  },
+  "workspace": {
+    "error": {
+      "default": {
+        "title": "Ein unbekannter Fehler ist aufgetreten"
+      },
+      "fetch": {
+        "title": "Beim Suchen nach Arbeitsbereichen ist ein Fehler aufgetreten"
+      }
+    },
+    "inValid": {
+      "default": {
+        "title": "Beim Suchen nach Arbeitsbereichen ist ein Fehler aufgetreten."
+      },
+      "isFile": {
+        "description": "Überprüfen Sie, ob den {{settingsLink}} tatsächlich ein Ordner ist",
+        "title": "Keiner der Stammordner ist ein Verzeichnis."
+      },
+      "nonexistent": {
+        "description": "Überprüfen Sie die Pfade zu {{settingsLink}}.",
+        "title": "Keiner der Stammordner existiert."
+      },
+      "noRootFolders": {
+        "description": "Geben Sie einen oder mehrere {{settingsLink}} an, in denen nach Arbeitsbereichen gesucht werden soll.",
+        "title": "Keine Stammordner angegeben."
+      },
+      "noWorkspaces": {
+        "descriptionDepth": "Die aktuelle Suchtiefe ist 0, dass nur die Stammordner nach Arbeitsbereichsdateien durchsucht werden",
+        "descriptionSettings": "Versuchen Sie, die {{settingsLinkDepth}} zu erhöhen oder die {{settingsLinkRootFolder}} Einstellungen ändern.",
+        "title": "Keine Arbeitsbereiche gefunden"
+      }
+    },
+    "links": {
+      "checkSettings": "Überprüfen Sie die Erweiterungseinstellungen",
+      "depth": "Tiefe",
+      "excludeFolders": "bestimmte Ordner",
+      "excludeHiddenFolders": "versteckter Ordner",
+      "rootFolder": "Stammordner",
+      "rootFolders": "Stammordner"
+    },
+    "list": {
+      "default": {
+        "title": "Beim Suchen nach Arbeitsbereichen ist ein Fehler aufgetreten."
+      },
+      "extWs": {
+        "saveButton": "Zu Stammordnern hinzufügen"
+      },
+      "fileicons": {
+        "loadingMsg": "Dateithemadaten werden geladen"
+      },
+      "folder": {
+        "open-plural": "Derzeit geöffnete Ordner:",
+        "open": "Derzeit offener Ordner:",
+        "saveButton": "Als neuen Arbeitsbereich speichern"
+      },
+      "isFile": {
+        "description": "Überprüfen Sie, ob den {{settingsLink}} tatsächlich ein Ordner ist",
+        "title": "Der Stammordner ist eine Datei, kein Verzeichnis."
+      },
+      "itemButtons": {
+        "newWindow": {
+          "openCurWin": "'{{label}}' in diesem Fenster öffnen",
+          "openNewWin": "'{{label}}' in einem neuen Fenster öffnen",
+          "selected": "Aktueller Arbeitsbereich",
+          "selectedExt": "Aktueller Arbeitsbereich (nicht innerhalb der Stammordner)"
+        },
+        "openFilemanager": {
+          "ariaLabel": "Öffnen Sie den Ordner '{{label}}' in Ihrem Dateimanager",
+          "tooltip": "Öffnen Sie den Ordner '{{label}}' in Ihrem Dateimanager"
+        },
+        "refetchRootfolder": {
+          "ariaLabel": "Arbeitsbereiche für '{{label}}' neu einsammeln",
+          "tooltip": "Arbeitsbereiche für '{{label}}' neu einsammeln"
+        }
+      },
+      "mapError": {
+        "description": "Der Ordnerpfad '{{folderPath}}' kann keinem Stammordner zugeordnet werden.",
+        "title": "Fehler bei der Zuordnung des Stammordners"
+      },
+      "nonexistent": {
+        "description": "Überprüfen Sie der Pfad zu {{settingsLink}}.",
+        "title": "Der Stammordner existiert nicht."
+      },
+      "noWorkspaces": {
+        "hintDepth": "Die aktuelle Suchtiefe ist 0, das bedeutet, dass keine Unterordner durchsucht werden.",
+        "hintSettings": "Versuchen Sie, die Suchtiefe zu erhöhen oder den Ordner-Einstellungen ändern.",
+        "title": "Keine Arbeitsbereiche gefunden"
+      },
+      "search": {
+        "ariaLabel": "Arbeitsbereiche durchsuchen",
+        "placeholder": "Suchen...",
+        "noMatch": "Keine Arbeitsbereiche stimmten mit Ihren Suchbegriffen überein",
+        "options": {
+          "caseInsensitive": "Case-insensitive",
+          "matchStart": "Abgleich vom Beginn des Namens"
+        },
+        "optionsLegend": "Suchoptionen"
+      },
+      "title": "Arbeitsbereiche: {{title}}",
+      "titleCount": {
+        "default": "{{total}}",
+        "searched": "{{matches}}/{{total}}"
+      }
+    },
+    "loading": {
+      "descriptionWithHidden": "Wenn dies lange dauert, versuchen Sie, {{settingsLinkRootFolder}} oder {{settingsLinkHidden}} auszuschließen. Auch eine Verringerung der {{settingsLinkDepth}} kann hilfreich sein.",
+      "description": "Wenn dies lange dauert, versuchen Sie, {{settingsLinkRootFolder}} auszuschließen. Auch eine Verringerung der {{settingsLinkDepth}} kann hilfreich sein.",
+      "hasRootFolderIssues": "Mindestens ein {{settingsLinkRootFolders}} überschreibt die Einstellungen für depth/excludeHiddenFolders.",
+      "title": "Arbeitsbereiche wird gesucht..."
+    }
+  }
+}

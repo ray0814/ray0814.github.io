@@ -1,0 +1,23 @@
+<EmberWormhole
+  @to='{{@containerId}}-outlet-menu'
+  @renderInPlace={{this.renderInPlace}}
+>
+  <div
+    class='bm-menu'
+    style={{this.style}}
+    {{did-insert this.onOpenChange this.state.open}}
+    {{did-update this.onOpenChange this.state.open}}
+  >
+    {{yield
+      (hash
+        item=(component
+          'bm-menu-item'
+          tagName=this.itemTagName
+          menuItems=this.menuItems
+          dismissOnClick=this.dismissOnItemClick
+          state=this.state
+        )
+      )
+    }}
+  </div>
+</EmberWormhole>

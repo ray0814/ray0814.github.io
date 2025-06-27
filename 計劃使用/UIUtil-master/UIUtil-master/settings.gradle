@@ -1,0 +1,9 @@
+rootProject.name='UIUtil'
+
+include ':app',
+        ':lib_view',
+        ':lib_layout',
+        ':module_view',
+        ':module_layout'
+
+

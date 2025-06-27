@@ -1,0 +1,347 @@
+{
+  "name": "vsc-workspace-sidebar",
+  "description": "An extension for VSCode to switch Workspaces with ease.",
+  "displayName": "Workspace Sidebar",
+  "version": "2.1.1",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "bugs": {
+    "url": "https://github.com/sketchbuch/vsc-workspace-sidebar/issues"
+  },
+  "categories": [
+    "Other"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "vsc-workspace-sidebar-open-cur-win",
+        "title": "%ext.cmd.wsListItem.open.curWindow%"
+      },
+      {
+        "command": "vsc-workspace-sidebar-open-new-win",
+        "icon": {
+          "light": "./resources/images/light/new-window.svg",
+          "dark": "./resources/images/dark/new-window.svg"
+        },
+        "title": "%ext.cmd.wsListItem.open.newWindow%"
+      },
+      {
+        "command": "vsc-workspace-sidebar-refetch",
+        "icon": {
+          "light": "./resources/images/light/refetch.svg",
+          "dark": "./resources/images/dark/refetch.svg"
+        },
+        "title": "%ext.cmd.wsList.refetch%"
+      },
+      {
+        "command": "vsc-workspace-sidebar-settings",
+        "title": "%ext.cmd.wsListItem.checkSettings%"
+      },
+      {
+        "command": "vsc-workspace-sidebar-collapse-all",
+        "icon": {
+          "light": "./resources/images/light/collapse-all.svg",
+          "dark": "./resources/images/dark/collapse-all.svg"
+        },
+        "title": "%ext.cmd.wsList.collapse-all%"
+      },
+      {
+        "command": "vsc-workspace-sidebar-expand-all",
+        "icon": {
+          "light": "./resources/images/light/expand-all.svg",
+          "dark": "./resources/images/dark/expand-all.svg"
+        },
+        "title": "%ext.cmd.wsList.expand-all%"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "%config.title%",
+        "properties": {
+          "workspaceSidebar.actions": {
+            "default": "Current Window",
+            "description": "%config.actions.description%",
+            "enum": [
+              "Current Window",
+              "New Window"
+            ],
+            "enumDescriptions": [
+              "%config.actions.cur-window%",
+              "%config.actions.new-window%"
+            ],
+            "scope": "application",
+            "type": "string"
+          },
+          "workspaceSidebar.cleanLabels": {
+            "default": true,
+            "description": "%config.cleanLabels.description%",
+            "scope": "application",
+            "type": "boolean"
+          },
+          "workspaceSidebar.depth": {
+            "default": 0,
+            "description": "%config.depth.description%",
+            "maximum": 25,
+            "minimum": 0,
+            "scope": "application",
+            "type": "number"
+          },
+          "workspaceSidebar.focusExplorer": {
+            "default": false,
+            "description": "%config.focusExplorer.description%",
+            "scope": "application",
+            "type": "boolean"
+          },
+          "workspaceSidebar.showFileIcons": {
+            "default": true,
+            "markdownDescription": "%config.showFileIcons.markdownDescription%",
+            "scope": "application",
+            "type": "boolean"
+          },
+          "workspaceSidebar.showFileIconsConfig": {
+            "default": {},
+            "markdownDescription": "%config.showFileIconsConfig.markdownDescription%",
+            "scope": "application",
+            "type": "object"
+          },
+          "workspaceSidebar.showPaths": {
+            "default": "As needed",
+            "description": "%config.showPaths.description%",
+            "enum": [
+              "Always",
+              "As needed",
+              "Never"
+            ],
+            "enumDescriptions": [
+              "%config.showPaths.always%",
+              "%config.showPaths.asneeded%",
+              "%config.showPaths.never%"
+            ],
+            "scope": "application",
+            "type": "string"
+          }
+        }
+      },
+      {
+        "title": "%config.title.folders%",
+        "properties": {
+          "workspaceSidebar.excludeHiddenFolders": {
+            "default": true,
+            "description": "%config.excludeHiddenFolders.description%",
+            "scope": "application",
+            "type": "boolean"
+          },
+          "workspaceSidebar.folder": {
+            "default": "",
+            "deprecationMessage": "%config.folder.deprecationMessage%",
+            "description": "%config.folder.description%",
+            "scope": "application",
+            "type": "string"
+          },
+          "workspaceSidebar.rootFolders": {
+            "default": [],
+            "markdownDescription": "%config.rootFolders.markdownDescription%",
+            "scope": "machine",
+            "type": "array",
+            "properties": {
+              "type": "string",
+              "description": "folder name"
+            }
+          },
+          "workspaceSidebar.folders.excluded": {
+            "default": [
+              "node_modules",
+              "build",
+              "dist",
+              "out",
+              "public",
+              ".cache",
+              ".git"
+            ],
+            "markdownDescription": "%config.folders.excluded.markdownDescription%",
+            "scope": "application",
+            "type": "array"
+          }
+        }
+      },
+      {
+        "title": "%config.title.search%",
+        "properties": {
+          "workspaceSidebar.search.caseInsensitive": {
+            "default": false,
+            "description": "%config.search.caseInsensitive.description%",
+            "scope": "application",
+            "type": "boolean"
+          },
+          "workspaceSidebar.search.matchStart": {
+            "default": false,
+            "description": "%config.search.matchStart.description%",
+            "scope": "application",
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "title": "%config.title.treeview%",
+        "properties": {
+          "workspaceSidebar.showFolderHierarchy": {
+            "default": false,
+            "description": "%config.showFolderHierarchy.description%",
+            "scope": "application",
+            "type": "boolean"
+          },
+          "workspaceSidebar.condenseFileTree": {
+            "default": true,
+            "markdownDescription": "%config.condenseFileTree.markdownDescription%",
+            "scope": "application",
+            "type": "boolean"
+          }
+        }
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "vsc-workspace-sidebar-focus-search",
+        "key": "ctrl+shift+q",
+        "mac": "cmd+shift+q",
+        "when": "sideBarVisible && focusedView == vsc-workspace-sidebar-webview-workspace"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "vsc-workspace-sidebar-collapse-all",
+          "group": "navigation@0",
+          "when": "view == vsc-workspace-sidebar-webview-workspace && vsc-workspace-sidebar-list-loaded"
+        },
+        {
+          "command": "vsc-workspace-sidebar-expand-all",
+          "group": "navigation@1",
+          "when": "view == vsc-workspace-sidebar-webview-workspace && vsc-workspace-sidebar-list-loaded"
+        },
+        {
+          "command": "vsc-workspace-sidebar-refetch",
+          "group": "navigation@3",
+          "when": "view == vsc-workspace-sidebar-webview-workspace && vsc-workspace-sidebar-list-loaded"
+        }
+      ]
+    },
+    "views": {
+      "vsc-workspace-sidebar": [
+        {
+          "type": "webview",
+          "id": "vsc-workspace-sidebar-webview-workspace",
+          "name": "%views.title%"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "icon": "./resources/images/activitybar.svg",
+          "id": "vsc-workspace-sidebar",
+          "title": "%viewsContainers.activitybar.title%"
+        }
+      ]
+    }
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-push": "lint-staged",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "icon": "docs/images/icon/icon.png",
+  "keywords": [
+    "manager",
+    "sidebar",
+    "switcher",
+    "workspace",
+    "workspaces"
+  ],
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "lint-staged": {
+    "{src, resources/js}/**/*.{js,ts}": [
+      "yarn lint:ts",
+      "yarn lint:prettier",
+      "git add"
+    ]
+  },
+  "main": "dist/extension.js",
+  "publisher": "sketchbuch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sketchbuch/vsc-workspace-sidebar"
+  },
+  "volta": {
+    "node": "18.15.0",
+    "yarn": "1.22.22"
+  },
+  "scripts": {
+    "build:dev": "parcel build ./src/extension.ts --target=dev",
+    "build:release": "parcel build ./src/extension.ts --target=release",
+    "changever": "sh ./scripts/change_version.sh",
+    "circdeps": "node ./scripts/find_circular.js",
+    "clean:cache": "rimraf ./.parcel-cache/*",
+    "clean:dist": "rimraf ./dist/*",
+    "clean:test": "rimraf ./test/*",
+    "clean": "yarn clean:cache && yarn clean:dist && yarn clean:test",
+    "dev": "yarn clean:dist && yarn build:dev",
+    "lint:css": "stylelint --config=.stylelintrc './resources/css/**/*.css'",
+    "lint:js": "eslint ./resources/js --ext js --fix",
+    "lint:prettier": "prettier --write --config ./.prettierrc.js './{src, resources/js}/**/*.{js,ts}'",
+    "lint:ts": "eslint ./src --ext ts --fix",
+    "lint": "yarn lint:js && yarn lint:ts && yarn lint:prettier && yarn lint:css",
+    "mocha:compile": "tsc -w -p ./",
+    "mocha:test": "mocha -w -ui tdd --",
+    "pretest": "yarn clean:dist && yarn build:dev && yarn lint",
+    "test": "yarn clean:test && yarn typecheck",
+    "typecheck": "tsc -p ./",
+    "vscode:prepublish": "yarn clean:dist && yarn build:release"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.1",
+    "@vscode/codicons": "^0.0.29",
+    "@vscode/webview-ui-toolkit": "^1.2.2",
+    "uuid": "^10.0.0",
+    "vscode-ext-localisation": "^1.1.0",
+    "vscode-file-theme-processor": "^1.0.8"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^8.3.4",
+    "@types/chai": "^4.2.14",
+    "@types/glob": "^7.1.1",
+    "@types/mocha": "^7.0.2",
+    "@types/mock-fs": "^4.13.4",
+    "@types/node": "^13.11.0",
+    "@types/sinon": "^9.0.9",
+    "@types/uuid": "^10.0.0",
+    "@types/vscode": "^1.50.0",
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0",
+    "chai": "^4.2.0",
+    "commitlint": "^8.3.5",
+    "eslint": "^6.8.0",
+    "eslint-plugin-mocha": "^10.1.0",
+    "glob": "^7.1.6",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8",
+    "madge": "^6.1.0",
+    "mocha": "^7.1.2",
+    "mock-fs": "^5.2.0",
+    "parcel": "^1.12.4",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
+    "sinon": "^9.2.2",
+    "stylelint": "^14.7.1",
+    "stylelint-config-recommended": "^7.0.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^4.9.3",
+    "vscode-test": "^1.3.0"
+  }
+}

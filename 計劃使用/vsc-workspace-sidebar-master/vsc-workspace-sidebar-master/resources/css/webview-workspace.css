@@ -1,0 +1,99 @@
+@import './workspace/views/error.css';
+@import './workspace/views/invalid.css';
+@import './workspace/views/list.css';
+@import './workspace/views/loading.css';
+@import './workspace/snippets/hoverNotification.css';
+
+:root {
+  --ext-workspace-sidebar__search-offset: 32px;
+  --ext-workspace-sidebar__padding-v: 0.3rem;
+  --ext-workspace-sidebar__padding-h: 20px;
+}
+
+body {
+  padding: 0;
+}
+
+body.vscode-light img[data-theme='dark'] {
+  display: none;
+}
+
+body.vscode-dark img[data-theme='light'] {
+  display: none;
+}
+
+.view {
+  height: 100%;
+  position: relative;
+  user-select: none;
+}
+
+.view__icon {
+  align-items: flex-start;
+  display: inline-flex;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  line-height: 100%;
+  position: absolute;
+  white-space: nowrap;
+  width: 20px;
+}
+
+.view__message {
+  color: var(--vscode-editorWidget-foreground);
+  margin: 0;
+  position: relative;
+}
+
+.view__message + .view__message {
+  margin-top: 0.5rem;
+}
+
+.view__message-icon {
+  left: 0px;
+  position: absolute;
+  top: 0;
+}
+
+.view__message-title {
+  display: block;
+  margin: 0;
+  padding-left: 24px;
+}
+
+.view__message-description {
+  color: var(--vscode-list-deemphasizedForeground);
+  display: block;
+  margin: 0;
+  margin-top: 0.2rem;
+  padding-left: 24px;
+  line-height: 1.1rem;
+}
+
+.view__message-description-tinytext {
+  font-size: 10px;
+}
+
+.view__link {
+  cursor: pointer;
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+}
+
+.view__link:active {
+  color: var(--vscode-textLink-activeForeground);
+}
+
+.a11y__screenreader-text {
+  border: 0;
+  clip-path: inset(50%);
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

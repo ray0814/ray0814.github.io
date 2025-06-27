@@ -1,0 +1,222 @@
+.list {
+  position: relative;
+}
+
+.list__styled-list,
+.list__styled-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list__list-wrapper {
+  position: relative;
+  padding-top: var(--ext-workspace-sidebar__search-offset);
+}
+
+.list[data-folderopen='true'] .list__list-wrapper,
+.list[data-extws='true'] .list__list-wrapper {
+  padding-top: 0;
+}
+
+.list--empty {
+  padding: var(--ext-workspace-sidebar__padding-v) var(--ext-workspace-sidebar__padding-h);
+}
+
+.list__styled-item {
+  color: var(--vscode-editorWidget-foreground);
+  display: flex;
+  margin: 0;
+  padding: 0;
+  touch-action: none;
+  position: relative;
+}
+
+.list__element {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  font-size: var(--vscode-font-size);
+  margin: 0;
+  min-width: 0;
+  padding: var(--ext-workspace-sidebar__padding-v) var(--ext-workspace-sidebar__padding-h);
+  position: relative;
+  text-decoration: none;
+  touch-action: none;
+}
+
+.list__styled-item--unselected {
+  cursor: pointer;
+}
+
+.list__styled-item--selected {
+  background: var(--vscode-list-activeSelectionBackground);
+  color: var(--vscode-editor-foreground);
+}
+
+.list__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-left: var(--ext-workspace-sidebar__padding-h);
+  position: relative;
+  text-decoration: none;
+  touch-action: none;
+}
+
+.list[data-fileiconsactive='true'] .list__text,
+.list[data-fileiconsactive='false'] .list__text {
+  padding-left: 18px;
+}
+
+.list__description {
+  color: var(--vscode-list-deemphasizedForeground);
+  display: block;
+  margin: 0;
+  margin-top: 0.25rem;
+  opacity: 0.75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list__styled-item--selected .list__element .list__description {
+  color: var(--vscode-list-activeSelectionForeground);
+  opacity: 1;
+}
+
+@media (min-width: 300px) {
+  .list__text {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.list__styled-item:hover {
+  background: var(--vscode-list-hoverBackground);
+  color: var(--vscode-editorWidget-foreground);
+}
+
+.list__styled-item:focus {
+  outline: none;
+  background: var(--vscode-list-focusBackground);
+  color: var(--vscode-editorWidget-foreground);
+}
+
+.list__styled-item:active {
+  color: var(--vscode-editorWidget-foreground);
+}
+
+.list__title {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list__styled-item--selected:not(.list__branch-list-item-folder) .list__title {
+  font-weight: bold;
+}
+
+@media (min-width: 300px) {
+  .list__title {
+    display: inline;
+    margin-right: 0.5rem;
+    overflow: unset;
+    text-overflow: unset;
+  }
+}
+
+@media (min-width: 300px) {
+  .list__description {
+    display: inline;
+    margin-top: 0;
+  }
+}
+
+.list__styled-item:hover > .list__element > .list__description,
+.list__styled-item:focus > .list__element > .list__description,
+.list__styled-item:active > .list__element > .list__description {
+  opacity: 1;
+}
+
+.list__buttons {
+  background: var(--vscode-list-hoverBackground);
+  display: none;
+  height: 100%;
+  line-height: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  white-space: nowrap;
+}
+
+.list__styled-item:hover > .list__element > .list__buttons {
+  display: inline-flex;
+}
+
+.list__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list__button + .list__button {
+  margin-left: 5px;
+}
+
+.list__icon {
+  top: 0.25rem;
+}
+
+.list--empty .list__icon {
+  top: 0.3rem;
+}
+
+.list__styled-item mark {
+  background: var(--vscode-editor-findMatchHighlightBackground);
+  color: var(--vscode-editorWidget-foreground);
+}
+
+.list__styled-item--selected mark {
+  color: var(--vscode-editor-foreground);
+}
+
+.list__list-section {
+  position: relative;
+}
+
+.list__list-section[data-isclosed='false'] {
+  margin-bottom: 5px;
+}
+
+.list__list-section:last-child {
+  margin-bottom: 0;
+}
+
+.rootfolder__message {
+  list-style: none;
+  margin: 0;
+  padding: var(--ext-workspace-sidebar__padding-v) var(--ext-workspace-sidebar__padding-h);
+  padding-left: 40px;
+}
+
+.list .list__styled-pusher {
+  margin-top: var(--ext-workspace-sidebar__search-offset);
+}
+
+.list__styled-pusher-divider {
+  margin-top: -4px;
+}
+
+.list__styled-pusher-controls {
+  padding-bottom: 0.7rem;
+  padding-top: var(--ext-workspace-sidebar__padding-v);
+  text-align: center;
+}

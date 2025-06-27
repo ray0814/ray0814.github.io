@@ -1,0 +1,78 @@
+.list__styled-list--tree {
+  position: relative;
+}
+
+.list_branch-indent-box {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  left: 25px;
+  position: relative;
+}
+
+.list_branch-indent {
+  border-left: 1px solid transparent;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 100%;
+  opacity: 0.5;
+  transition: border-color 0.1s linear;
+  width: 10px;
+}
+
+.list_branch-indent-list {
+  width: 18px;
+}
+
+.list__styled-list--tree[data-indent-guides='always'] .list_branch-indent,
+.list__styled-list--tree[data-indent-guides='onHover']:hover .list_branch-indent {
+  border-left-color: var(--vscode-tree-indentGuidesStroke);
+}
+
+.list_branch-icon {
+  height: 22px;
+  left: 16px;
+  position: absolute;
+  top: 0.25rem;
+  width: 20px;
+}
+
+.list_branch-icon-empty {
+  min-width: 8px;
+  width: 8px;
+}
+
+.list[data-fileiconsactive='false'] .list_branch-icon-empty + .list__text {
+  padding-left: 0;
+}
+
+.list[data-fileiconsactive='true'] .list__branch-list-item .list_branch-icon-empty + .list__text,
+.list[data-fileiconsactive='false'] .list__branch-list-item .list_branch-icon-empty + .list__text {
+  padding-left: 18px;
+}
+
+.list__branch-list-item-folder .list__title {
+  opacity: 0.66;
+}
+
+.list__branch-list-item-folder--root .list__title {
+  opacity: 0.85;
+}
+
+.list__branch-list-item-folder.list__styled-item--selected .list__title {
+  opacity: 1;
+}
+
+.list__branch-list-item-folder--root {
+  color: var(--vscode-editor-foreground);
+  font-size: 11px;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.list__branch-list-item-folder--root .list__element {
+  font-size: inherit;
+}

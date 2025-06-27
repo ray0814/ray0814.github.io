@@ -1,0 +1,33 @@
+.list__folder {
+  position: relative;
+}
+
+.list__folder-title {
+  margin: 0.7rem 0;
+  padding: 0 var(--ext-workspace-sidebar__padding-h);
+  padding-top: 0.5rem;
+}
+
+.list__folder .list__element:hover {
+  background: unset;
+}
+
+.list__folder .list__folder-list-item:hover,
+.list__folder .list__folder-list-item:focus,
+.list__folder .list__folder-list-item:active {
+  background-color: unset;
+}
+
+.list__folder:hover .list__element > .list__description,
+.list__folder:focus .list__element > .list__description,
+.list__folder:active .list__element > .list__description {
+  opacity: 0.85;
+}
+
+.list__folder-divider {
+  padding: 0 var(--ext-workspace-sidebar__padding-h);
+}
+
+.list__folder-vscodedivider {
+  margin-bottom: 0;
+}

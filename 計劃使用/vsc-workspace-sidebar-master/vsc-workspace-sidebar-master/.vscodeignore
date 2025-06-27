@@ -1,0 +1,28 @@
+# Files
+.cache
+.gitignore
+.nvmrc
+.prettierrc.js
+.stylelintignore
+.stylelintrc
+*.code-workspace
+**/.eslintrc.json
+**/.vsix
+**/.zip
+**/*.map
+**/*.ts
+**/tsconfig.json
+commitlint.config.js
+docs/**/*.svg
+vsc-extension-quickstart.md
+
+# Folders
+.github/**
+.vscode-test/**
+.vscode/**
+docs/icon/
+docs/social/
+out/test/**
+scripts/
+src/**
+test/**
