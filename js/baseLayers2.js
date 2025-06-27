@@ -5,6 +5,76 @@ baseLayers['本地地圖'] = L.tileLayer("/tiles/L{z}/{y}/{x}.png", {
 		  minZoom: 7,
 		  attribution: ''
 		});
+baseLayers['voyager'] = L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['voyager_nolabels'] = L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['voyager_only_labels'] = L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['voyager_labels_under'] = L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['voyager_no_buildings'] = L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager_no_buildings/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['voyager_only_labels_no_buildings'] = L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager_only_labels_no_buildings/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['voyager_no_labels_no_buildings'] = L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager_no_labels_no_buildings/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['light_all'] = L.tileLayer('https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['light_nolabels'] = L.tileLayer('https://basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['light_only_labels'] = L.tileLayer('https://basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['dark_all'] = L.tileLayer('https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['dark_nolabels'] = L.tileLayer('https://basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['dark_only_labels'] = L.tileLayer('https://basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
+baseLayers['spotify_dark'] = L.tileLayer('https://basemaps.cartocdn.com/spotify_dark/{z}/{x}/{y}.png', {
+		  tileSize: 256,
+		  maxZoom: 30,
+		  attribution: 'basemaps'
+		});
 baseLayers['ArcGIS Online'] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.jpeg', {
 		  tileSize: 256,
 		  maxZoom: 18,
