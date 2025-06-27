@@ -44,6 +44,12 @@ https://github.com/bbecquet/Leaflet.PolylineDecorator
 https://github.com/bgx1012/leaflet-polygon-fillPattern-canvas
 https://github.com/iDerekLi/Leaflet.CustomLayer
 v, https://github.com/lennardv2/Leaflet.awesome-markers
+https://github.com/noerw/leaflet-sidebar-v2
+https://github.com/Turbo87/leaflet-sidebar
+https://github.com/Esri/bootstrap-map-js
+https://github.com/mfhsieh/leaflet-bootstrap-dropdowns
+https://github.com/BenPortner/leaflet-burgermenu
+https://github.com/adammertel/Leaflet.Control.Select
 https://github.com/masajid390/BeautifyMarker
 https://github.com/windycom/API
 https://github.com/KrausMatthias/Leaflet.TimeDimension.Rainviewer
