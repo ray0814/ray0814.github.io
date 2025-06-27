@@ -50,6 +50,7 @@ https://github.com/Esri/bootstrap-map-js
 https://github.com/mfhsieh/leaflet-bootstrap-dropdowns
 https://github.com/BenPortner/leaflet-burgermenu
 https://github.com/adammertel/Leaflet.Control.Select
+https://github.com/unbam/Leaflet.SlideMenu
 https://github.com/masajid390/BeautifyMarker
 https://github.com/windycom/API
 https://github.com/KrausMatthias/Leaflet.TimeDimension.Rainviewer
