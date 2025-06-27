@@ -12,7 +12,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException,
 import requests
 
 # https://map.tgos.tw/TGOSCloudMap?addr=新竹縣關西鎮東安里中山東路26號
-# https://map.tgos.tw/TGOSCloudMap?addr=高雄市前金區五福三路54號1樓
+# https://map.tgos.tw/TGOSCloudMap?addr=新北市板橋區中山路一段１２６、１２８號１樓
 
 # 定義：從 TGOS 網站取得座標
 # def get_coordinates_from_tgos(addr: str):
