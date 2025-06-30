@@ -156,7 +156,7 @@
 <script>
 			document.addEventListener("DOMContentLoaded", function() {
 				window.coords = [];
-				window.routes = [];
+				<!-- window.routes = []; -->
 				window.currentRouteIndex = -1;
 
 
@@ -493,8 +493,8 @@
 			});
 		
 			document.getElementById("confirmRouteBtn").addEventListener("click", () => {
-				const name = document.getElementById("route-name").value.trim();
-				<!-- if (!name) return alert("請輸入路線名稱"); -->
+				const name = document.getElementById("routeList").value.trim();
+				if (!name) return alert("請輸入路線名稱");
 				
 				const newRoute = {
 					name: name,
@@ -503,10 +503,11 @@
 					markers: []
 				};
 				
-				routes.push(newRoute);
-				currentRouteIndex = routes.length - 1;
-				updateRoute(true);
-				alert("已新增路線：" + name);
+                routes[name] = newRoute;
+                currentRoute = name;
+                updateRoute(true);
+                alert("已新增路線：" + name);
+
 			});
 		
 			function convertToWGS84(coord) {
