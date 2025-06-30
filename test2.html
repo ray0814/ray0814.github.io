@@ -421,70 +421,113 @@
 		</script>
 <!-- Route Manager UI -->
 <div id="route-manager" style="display:none; position:absolute; top:60px; right:120px; z-index:1000; background:#fff; padding:10px; border:1px solid #ccc; width:300px;">
-<div id="routeInfo" style="margin-top:10px;"></div>
-<div style="margin-top:20px;">
-<h3>多路線管理</h3>
-<select id="routeList" onchange="switchRoute()"></select>
-<button onclick="createNewRoute()">新增</button>
-<button onclick="deleteRoute()">刪除</button>
-<button onclick="renameRoute()">重新命名</button>
+  <!-- 隱藏按鈕 -->
+  <button id="hideRouteManagerBtn" class="ui mini red button" style="float:right;">✖️ 關閉</button>
+
+  <div style="clear:both;"></div> <!-- 讓內容不會被 float 影響 -->
+
+  <div id="routeInfo" style="margin-top:10px;"></div>
+
+  <div style="margin-top:20px;">
+    <h3>多路線管理</h3>
+    <select id="routeList" onchange="switchRoute()"></select>
+    <button onclick="createNewRoute()">新增</button>
+    <button onclick="deleteRoute()">刪除</button>
+    <button onclick="renameRoute()">重新命名</button>
+  </div>
+
+  <h4>路線管理</h4>
+  <div>
+    <label>座標系統：</label>
+    <label><input type="radio" name="coordType" value="TWD67" />TWD67</label>
+    <label><input type="radio" name="coordType" value="TWD97" checked />TWD97</label>
+    <label><input type="radio" name="coordType" value="WGS84" />WGS84</label>
+  </div>
+
+  <div>
+    <input id="coordInput" type="text" placeholder="lat,lng" style="width:100%;" />
+    <button id="addCoordBtn">加入座標</button>
+  </div>
+
+  <ul id="coordList" style="max-height:150px; overflow-y:auto; padding-left:20px;"></ul>
+
+  <div>
+    <button id="clearCoordsBtn">取消</button>
+    <button id="confirmRouteBtn">確定</button>
+  </div>
 </div>
-<!-- <input id="route-name" placeholder="輸入路線名稱" style="width:100%; margin-bottom:5px;" type="text"/> -->
-<h4>路線管理</h4>
-<div>
-<label>座標系統：</label>
-<label>
-<input name="coordType" type="radio" value="TWD67"/>TWD67
-                </label>
-<label>
-<input checked="" name="coordType" type="radio" value="TWD97"/>TWD97
-				</label>
-<label>
-<input name="coordType" type="radio" value="WGS84"/>WGS84
-                </label>
-</div>
-<div>
-<input id="coordInput" placeholder="lat,lng" style="width:100%;" type="text"/>
-<button id="addCoordBtn">加入座標</button>
-</div>
-<ul id="coordList" style="max-height:150px; overflow-y:auto; padding-left:20px;"></ul>
-<div>
-<button id="clearCoordsBtn">取消</button>
-<button id="confirmRouteBtn">確定</button>
-</div>
-</div>
+
 <script>
             document.getElementById("addRouteBtn").addEventListener("click", () => {
-				const routeManager = document.getElementById("route-manager");
-				routeManager.style.display = routeManager.style.display === "none" ? "block" : "none";
+			const routeManager = document.getElementById("route-manager");
+			const isVisible = routeManager.style.display === "block";
+
+			if (!isVisible) {
+				// 開啟 route-manager
+				routeManager.style.display = "block";
+
+				// 取得目前選擇的路線名稱
+				const selected = document.getElementById('routeList').value;
+				if (selected && routes[selected] && routes[selected].coords && routes[selected].coords.length > 0) {
+				// 若有座標，執行 switchRoute() 重新渲染
+				switchRoute();
+				}
+			} else {
+				// 如果已經開啟，則收起
+				routeManager.style.display = "none";
+			}
 			});
+
+
+			// 新增的關閉按鈕功能
+			document.getElementById("hideRouteManagerBtn").addEventListener("click", () => {
+				document.getElementById("route-manager").style.display = "none";
+			});
+
 			
 			document.getElementById("addCoordBtn").addEventListener("click", () => {
-				const coordInput = document.getElementById("coordInput");
-				const coordList = document.getElementById("coordList");
-				const value = coordInput.value.trim();
-				if (!value.match(/^[-+]?\d+(\.\d+)?\s*,\s*[-+]?\d+(\.\d+)?$/)) return alert("請輸入有效座標");
-				const [lat, lng] = value.split(",").map(Number);
-				const coordType = document.querySelector("input[name='coordType']:checked").value;
-				const item = document.createElement("li");
-				item.textContent = `${coordType}: ${lat}, ${lng}`;
-				const delBtn = document.createElement("button");
-				delBtn.textContent = "🗑️";
-				delBtn.style.marginLeft = "10px";
-				const coord = { lat, lng, type: coordType };
-				
-				delBtn.onclick = () => {
-					coordList.removeChild(item);
-					coords = coords.filter(c => c !== coord);
-					updateRoute();
-				};
-			
-				item.appendChild(delBtn);
-				coordList.appendChild(item);
-				coords.push(coord);
-				coordInput.value = "";
-				updateRoute();
-			});
+  const coordInput = document.getElementById("coordInput");
+  const coordList = document.getElementById("coordList");
+  const value = coordInput.value.trim();
+  if (!value.match(/^[-+]?\d+(\.\d+)?\s*,\s*[-+]?\d+(\.\d+)?$/)) return alert("請輸入有效座標");
+
+  const [lat, lng] = value.split(",").map(Number);
+  const coordType = document.querySelector("input[name='coordType']:checked").value;
+
+  const item = document.createElement("li");
+  item.textContent = `${coordType}: ${lat}, ${lng}`;
+
+  const delBtn = document.createElement("button");
+  delBtn.textContent = "🗑️";
+  delBtn.style.marginLeft = "10px";
+  const coord = { lat, lng, type: coordType };
+
+  delBtn.onclick = () => {
+    coordList.removeChild(item);
+    coords = coords.filter(c => c !== coord);
+    // 回存
+    if (currentRoute) {
+      routes[currentRoute].coords = coords;
+      saveRoutesToStorage();
+    }
+    updateRoute();
+  };
+
+  item.appendChild(delBtn);
+  coordList.appendChild(item);
+
+  coords.push(coord);
+
+  // ✅ 回存到目前路線
+  if (currentRoute) {
+    routes[currentRoute].coords = coords;
+    saveRoutesToStorage();
+  }
+
+  coordInput.value = "";
+  updateRoute();
+});
+
 		
 			document.getElementById("clearCoordsBtn").addEventListener("click", () => {
 				coords = [];
@@ -577,10 +620,31 @@
 		function createNewRoute() {
 			const name = prompt('Enter new route name:');
 			if (name && !routes[name]) {
-				routes[name] = [];
+				routes[name] = {
+					name: name,
+					coords: [],
+					layer: null,
+					markers: []
+				};
 				currentRoute = name;
+				coords = []; // 重設當前路線座標
+
+				// 清空 UI 路線列表並設定為新路線
 				updateRouteListUI();
 				document.getElementById('routeList').value = name;
+
+				// 清空地圖上的既有圖層與標記
+				if (window.routeLayer) {
+					map.removeLayer(window.routeLayer);
+					window.routeLayer = null;
+				}
+				if (window.routeMarkers && window.routeMarkers.length) {
+					window.routeMarkers.forEach(m => map.removeLayer(m));
+					window.routeMarkers = [];
+				}
+				document.getElementById("routeInfo").textContent = "";
+				document.getElementById("coordList").innerHTML = "";
+
 				saveRoutesToStorage();
 				alert('New route created: ' + name);
 			} else {
@@ -588,14 +652,55 @@
 			}
 		}
 
+
 		function switchRoute() {
 			const selected = document.getElementById('routeList').value;
 			if (selected && routes[selected]) {
 				currentRoute = selected;
-				alert('Switched to route: ' + selected);
-				// You can add logic here to redraw the route on map
+				coords = routes[selected].coords || [];
+
+				const coordList = document.getElementById("coordList");
+				coordList.innerHTML = "";
+
+				if (coords.length > 0) {
+					coords.forEach(coord => {
+						const item = document.createElement("li");
+						item.textContent = `${coord.type}: ${coord.lat}, ${coord.lng}`;
+
+						const delBtn = document.createElement("button");
+						delBtn.textContent = "🗑️";
+						delBtn.style.marginLeft = "10px";
+						delBtn.onclick = () => {
+							coordList.removeChild(item);
+							coords = coords.filter(c => c !== coord);
+							updateRoute();
+						};
+
+						item.appendChild(delBtn);
+						coordList.appendChild(item);
+					});
+
+					updateRoute(true);
+				} else {
+					// 如果沒有座標，清空圖層與標記
+					if (window.routeLayer) {
+						map.removeLayer(window.routeLayer);
+						window.routeLayer = null;
+					}
+					if (window.routeMarkers && window.routeMarkers.length) {
+						window.routeMarkers.forEach(m => map.removeLayer(m));
+						window.routeMarkers = [];
+					}
+					document.getElementById("routeInfo").textContent = "";
+				}
+
+				alert('已切換到路線: ' + selected);
+			} else {
+				alert('找不到選擇的路線。');
 			}
 		}
+
+
 
 		function deleteRoute() {
 			const selected = document.getElementById('routeList').value;
