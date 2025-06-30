@@ -47,6 +47,7 @@ var exportmap = (function () {
 
     if (imageformat === 'PDF') {
       domtoimage.toJpeg(mapContainer, exportOptions).then(function (dataUrl) {
+        const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('landscape', undefined, format);
         pdf.addImage(dataUrl, 'JPEG', 0, 0, dim[0], dim[1]);
         pdf.save(ExportImageName + '.pdf');
