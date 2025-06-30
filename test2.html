@@ -1,23 +1,24 @@
 <!DOCTYPE html>
+
 <html>
-	<head>
-		<title>地圖</title>
-		<link href="favicon.ico" rel="icon" type="image/x-icon"/>
-		<meta charset="utf-8"/>
-		<meta content="width=device-width, initial-scale=1" name="viewport"/>
-		<link href="css/leaflet.css" rel="stylesheet">
-		<link href="css/L.Control.Locate.min.css" rel="stylesheet"/>
-		<link href="css/Leaflet.PolylineMeasure.css" rel="stylesheet"/>
-		<link href="css/leaflet.awesome-markers.css" rel="stylesheet"/>
-		<link href="css/Leaflet.BigImage.css" rel="stylesheet"/>
-		<link href="css/Control.MiniMap.css" rel="stylesheet"/>
-		<link href="css/leaflet.contextmenu.css" rel="stylesheet"/>
-		<link href="css/leaflet.modal.css" rel="stylesheet"/>
-		<link href="css/leaflet-geoman.css" rel="stylesheet"/>
-		<link href="css/font-awesome-4.0.0.css" rel="stylesheet"/>
-		<link href="css/bootstrap-3.0.0.css" rel="stylesheet"/>
-		<link href="css/semantic-2.5.0.css" rel="stylesheet"/>
-		<style>
+<head>
+<title>地圖</title>
+<link href="favicon.ico" rel="icon" type="image/x-icon"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<link href="css/leaflet.css" rel="stylesheet"/>
+<link href="css/L.Control.Locate.min.css" rel="stylesheet"/>
+<link href="css/Leaflet.PolylineMeasure.css" rel="stylesheet">
+<link href="css/leaflet.awesome-markers.css" rel="stylesheet"/>
+<link href="css/Leaflet.BigImage.css" rel="stylesheet"/>
+<link href="css/Control.MiniMap.css" rel="stylesheet"/>
+<link href="css/leaflet.contextmenu.css" rel="stylesheet"/>
+<link href="css/leaflet.modal.css" rel="stylesheet"/>
+<link href="css/leaflet-geoman.css" rel="stylesheet"/>
+<link href="css/font-awesome-4.0.0.css" rel="stylesheet"/>
+<link href="css/bootstrap-3.0.0.css" rel="stylesheet"/>
+<link href="css/semantic-2.5.0.css" rel="stylesheet"/>
+<style>
 			html, body, #map {
 				height: 100%;
 				margin: 0;
@@ -61,101 +62,101 @@
 				z-index: 1000;
 			}
 		</style>
-		<script src="js/jquery-3.7.1.js" type="text/javascript"></script>
-		<script src="js/semantic-2.5.0.js" type="text/javascript"></script>
-		<script src="js/leaflet-1.9.3-src.js" type="text/javascript"></script>
-		<script src="js/proj4-2.19.3-src.js" type="text/javascript"></script>
-		<script src="js/baseLayers2.js" type="text/javascript"></script>
-		<script src="js/L.Control.Locate.min.js" type="text/javascript"></script>
-		<!-- <script type="text/javascript" src="js/leaflet-easyPrint.js"></script> -->
-		<script src="js/Leaflet.BigImage.js" type="text/javascript"></script>
-		<script src="js/Leaflet.PolylineMeasure.js" type="text/javascript"></script>
-		<script src="js/Control.MiniMap.js" type="text/javascript"></script>
-		<script src="js/leaflet-geoman.js" type="text/javascript"></script>
-		<script src="js/leaflet.awesome-markers.js" type="text/javascript"></script>
-		<script src="js/dom-to-image-more.js" type="text/javascript"></script>
-		<script src="js/jspdf-2.5.1.umd.js" type="text/javascript"></script>
-		<script src="js/jExportMap.js" type="text/javascript"></script>
-	</head>
-	<body>
-		<button class="ui icon button" id="toggleExportBtn" style="position: absolute; top: 120px; right: 5px; z-index: 1001;">
-			<i class="download icon"></i>
-		</button>
-		<button class="ui icon button" id="addRouteBtn" style="position: absolute; top: 160px; right: 5px; z-index: 1001;">
-			<i class="plus icon"></i>
-		</button>
-		<div>
-			<div class="ui segment" id="exportmapseg">
-				<table style="width:100%;">
-					<tbody>
-						<tr>
-							<td style="width:75px;">頁面大小</td>
-							<td>
-								<select class="ui fluid dropdown" id="format">
-									<option value="a0">A0 (slow)</option>
-									<option value="a1">A1</option>
-									<option value="a2">A2</option>
-									<option value="a3">A3</option>
-									<option selected="" value="a4">A4</option>
-									<option value="a5">A5 (fast)</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>解析度</td>
-							<td>
-								<select class="ui fluid dropdown" id="resolution">
-									<option value="72">72 dpi (fast)</option>
-									<option value="150">150 dpi</option>
-									<option selected="" value="200">200 dpi</option>
-									<option value="300">300 dpi (slow)</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>比例尺</td>
-							<td>
-								<select class="ui fluid dropdown" id="pscale">
-									<option value="500">1:500000</option>
-									<option selected="" value="250">1:250000</option>
-									<option value="100">1:100000</option>
-									<option value="50">1:50000</option>
-									<option value="25">1:25000</option>
-									<option value="10">1:10000</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<td>輸出格式</td>
-							<td>
-								<select class="ui fluid dropdown" id="imageformat">
-									<option selected="" value="PNG">PNG</option>
-									<option value="JPEG">JPEG</option>
-									<option value="PDF">PDF</option>
-								</select>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<button class="fluid ui primary basic button" id="exportMapBtn" onclick="exportmap.WebMapExport()" style="margin-top:10px;" type="button" value="export">輸出</button>
-			</div>
-		</div>
-		<script>
+<script src="js/jquery-3.7.1.js" type="text/javascript"></script>
+<script src="js/semantic-2.5.0.js" type="text/javascript"></script>
+<script src="js/leaflet-1.9.3-src.js" type="text/javascript"></script>
+<script src="js/proj4-2.19.3-src.js" type="text/javascript"></script>
+<script src="js/baseLayers2.js" type="text/javascript"></script>
+<script src="js/L.Control.Locate.min.js" type="text/javascript"></script>
+<!-- <script type="text/javascript" src="js/leaflet-easyPrint.js"></script> -->
+<script src="js/Leaflet.BigImage.js" type="text/javascript"></script>
+<script src="js/Leaflet.PolylineMeasure.js" type="text/javascript"></script>
+<script src="js/Control.MiniMap.js" type="text/javascript"></script>
+<script src="js/leaflet-geoman.js" type="text/javascript"></script>
+<script src="js/leaflet.awesome-markers.js" type="text/javascript"></script>
+<script src="js/dom-to-image-more.js" type="text/javascript"></script>
+<script src="js/jspdf-2.5.1.umd.js" type="text/javascript"></script>
+<script src="js/jExportMap.js" type="text/javascript"></script>
+</link></head>
+<body>
+<button class="ui icon button" id="toggleExportBtn" style="position: absolute; top: 120px; right: 5px; z-index: 1001;">
+<i class="download icon"></i>
+</button>
+<button class="ui icon button" id="addRouteBtn" style="position: absolute; top: 160px; right: 5px; z-index: 1001;">
+<i class="plus icon"></i>
+</button>
+<div>
+<div class="ui segment" id="exportmapseg">
+<table style="width:100%;">
+<tbody>
+<tr>
+<td style="width:75px;">頁面大小</td>
+<td>
+<select class="ui fluid dropdown" id="format">
+<option value="a0">A0 (slow)</option>
+<option value="a1">A1</option>
+<option value="a2">A2</option>
+<option value="a3">A3</option>
+<option selected="" value="a4">A4</option>
+<option value="a5">A5 (fast)</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>解析度</td>
+<td>
+<select class="ui fluid dropdown" id="resolution">
+<option value="72">72 dpi (fast)</option>
+<option value="150">150 dpi</option>
+<option selected="" value="200">200 dpi</option>
+<option value="300">300 dpi (slow)</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>比例尺</td>
+<td>
+<select class="ui fluid dropdown" id="pscale">
+<option value="500">1:500000</option>
+<option selected="" value="250">1:250000</option>
+<option value="100">1:100000</option>
+<option value="50">1:50000</option>
+<option value="25">1:25000</option>
+<option value="10">1:10000</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>輸出格式</td>
+<td>
+<select class="ui fluid dropdown" id="imageformat">
+<option selected="" value="PNG">PNG</option>
+<option value="JPEG">JPEG</option>
+<option value="PDF">PDF</option>
+</select>
+</td>
+</tr>
+</tbody>
+</table>
+<button class="fluid ui primary basic button" id="exportMapBtn" onclick="exportmap.WebMapExport()" style="margin-top:10px;" type="button" value="export">輸出</button>
+</div>
+</div>
+<script>
 			// 參考來源：https://ithelp.ithome.com.tw/users/20108631/ironman/3629
 			// 參考來源：https://ithelp.ithome.com.tw/users/20107816/ironman/1541
 			$(document).ready(function() {
 				$('.ui.dropdown').dropdown();
 			});
 		</script>
-		<div id="map"></div>
-		<div class="toolbar">
-			<input id="coord-input" placeholder="輸入座標: 25.03,121.56" type="text"/>
-			<button onclick="searchCoords()">🔍 搜尋座標</button>
-		</div>
-		<script>
+<div id="map"></div>
+<div class="toolbar">
+<input id="coord-input" placeholder="輸入座標: 25.03,121.56" type="text"/>
+<button onclick="searchCoords()">🔍 搜尋座標</button>
+</div>
+<script>
 			document.addEventListener("DOMContentLoaded", function() {
 				window.coords = [];
-				routes = [];
+				window.routes = [];
 				window.currentRouteIndex = -1;
 
 
@@ -411,43 +412,49 @@
 				};
 			});
 		</script>
-		<script>
-			$(document).ready(function() {
-				$('#toggleExportBtn').on('click', function() {
-					$('#exportmapseg').toggle();
-				});
-			});
+<script>
+            $(document).ready(function() {
+                $('#toggleExportBtn').on('click', function() {
+                    $('#exportmapseg').toggle();
+                });
+            });
 		</script>
-		<!-- Route Manager UI -->
-		<div id="route-manager" style="display:none; position:absolute; top:60px; right:120px; z-index:1000; background:#fff; padding:10px; border:1px solid #ccc; width:300px;">
-			<input id="route-name" placeholder="輸入路線名稱" style="width:100%; margin-bottom:5px;" type="text">
-			<h4>路線管理</h4>
-			<div>
-				<label>座標系統：</label>
-				<label>
-					<input name="coordType" type="radio" value="TWD67"/>TWD67
+<!-- Route Manager UI -->
+<div id="route-manager" style="display:none; position:absolute; top:60px; right:120px; z-index:1000; background:#fff; padding:10px; border:1px solid #ccc; width:300px;">
+<div id="routeInfo" style="margin-top:10px;"></div>
+<div style="margin-top:20px;">
+<h3>多路線管理</h3>
+<select id="routeList" onchange="switchRoute()"></select>
+<button onclick="createNewRoute()">新增</button>
+<button onclick="deleteRoute()">刪除</button>
+<button onclick="renameRoute()">重新命名</button>
+</div>
+<!-- <input id="route-name" placeholder="輸入路線名稱" style="width:100%; margin-bottom:5px;" type="text"/> -->
+<h4>路線管理</h4>
+<div>
+<label>座標系統：</label>
+<label>
+<input name="coordType" type="radio" value="TWD67"/>TWD67
+                </label>
+<label>
+<input checked="" name="coordType" type="radio" value="TWD97"/>TWD97
 				</label>
-				<label>
-					<input checked="" name="coordType" type="radio" value="TWD97"/>TWD97
-				</label>
-				<label>
-					<input name="coordType" type="radio" value="WGS84"/>WGS84
-				</label>
-			</div>
-			<div>
-				<input id="coordInput" placeholder="lat,lng" style="width:100%;" type="text"/>
-				<button id="addCoordBtn">加入座標</button>
-			</div>
-			<ul id="coordList" style="max-height:150px; overflow-y:auto; padding-left:20px;"></ul>
-			<div>
-				<button id="clearCoordsBtn">取消</button>
-				<button id="confirmRouteBtn">確定</button>
-			</div>
-			<div id="routeInfo" style="margin-top:10px;"></div>
-		</div>
-		<script>
-
-			document.getElementById("addRouteBtn").addEventListener("click", () => {
+<label>
+<input name="coordType" type="radio" value="WGS84"/>WGS84
+                </label>
+</div>
+<div>
+<input id="coordInput" placeholder="lat,lng" style="width:100%;" type="text"/>
+<button id="addCoordBtn">加入座標</button>
+</div>
+<ul id="coordList" style="max-height:150px; overflow-y:auto; padding-left:20px;"></ul>
+<div>
+<button id="clearCoordsBtn">取消</button>
+<button id="confirmRouteBtn">確定</button>
+</div>
+</div>
+<script>
+            document.getElementById("addRouteBtn").addEventListener("click", () => {
 				const routeManager = document.getElementById("route-manager");
 				routeManager.style.display = routeManager.style.display === "none" ? "block" : "none";
 			});
@@ -487,7 +494,7 @@
 		
 			document.getElementById("confirmRouteBtn").addEventListener("click", () => {
 				const name = document.getElementById("route-name").value.trim();
-				if (!name) return alert("請輸入路線名稱");
+				<!-- if (!name) return alert("請輸入路線名稱"); -->
 				
 				const newRoute = {
 					name: name,
@@ -538,15 +545,8 @@
 				routeInfo.textContent = `總長度：${(dist / 1000).toFixed(2)} 公里`;
 			}
 		</script>
-		<div style="margin-top:20px;">
-			<h3>多路線管理</h3>
-			<select id="routeList" onchange="switchRoute()"></select>
-			<button onclick="createNewRoute()">新增路線</button>
-			<button onclick="deleteRoute()">刪除路線</button>
-			<button onclick="renameRoute()">重新命名路線</button>
-		</div>
-	</body>
-	<script>
+</body>
+<script>
 		let routes = {};
 		let currentRoute = null;
 
