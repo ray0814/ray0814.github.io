@@ -18,6 +18,8 @@
 <link href="css/font-awesome-4.0.0.css" rel="stylesheet"/>
 <link href="css/bootstrap-3.0.0.css" rel="stylesheet"/>
 <link href="css/semantic-2.5.0.css" rel="stylesheet"/>
+<link href="css/normalize.css" rel="stylesheet"/>
+<link href="css/leaflet.filelayer.css" rel="stylesheet"/>
 <style>
 			html, body, #map {
 				height: 100%;
@@ -77,7 +79,9 @@
 <script src="js/dom-to-image-more.js" type="text/javascript"></script>
 <script src="js/jspdf-2.5.1.umd.js" type="text/javascript"></script>
 <script src="js/jExportMap.js" type="text/javascript"></script>
-</link></head>
+<script src="js/leaflet.filelayer-1.2.0.js" type="text/javascript"></script>
+<script src="js/togeojson-0.16.0.js" type="text/javascript"></script>
+</head>
 <body>
 <button class="ui icon button" id="toggleExportBtn" style="position: absolute; top: 120px; right: 5px; z-index: 1001;">
 <i class="download icon"></i>
@@ -214,6 +218,8 @@
 				L.control.layers(baseLayers).addTo(map);
 
 				// 以下開始為各種外掛
+
+				
 
 				// 追加 ICON
 				function addMarker(Lat, Lng, Icon, Prefix, MarkerColor, IconColor, Spin) {
@@ -377,6 +383,22 @@
 					map.setView([lat, lng], 16);
 					userMarker.setLatLng([lat, lng]).bindPopup("🔍 搜尋座標").openPopup();
 				};
+
+				L.Control.FileLayerLoad.LABEL = '<img class="icon" src="images/folder.svg" alt="file icon"/>';
+				control = L.Control.fileLayerLoad({
+									fitBounds: true,
+									layerOptions: {
+										style: style,
+										pointToLayer: function (data, latlng) {
+											return L.circleMarker(
+												latlng,
+												{ style: style }
+											);
+										}
+									}
+								});
+
+				control.addTo(map);
 				
 				// Define projections
 				proj4.defs("EPSG:3826", "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
@@ -731,6 +753,8 @@
 
 		window.onload = function() {
 			loadRoutesFromStorage();
+
+			
 		};
 	</script>
 </html>
