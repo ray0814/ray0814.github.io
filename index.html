@@ -343,12 +343,12 @@
 			formData.append("file", file);
 
 			try {
-				const res = await axios.post("https://394adb0daa3a.ngrok-free.app/upload_gpx", formData, {
+				const res = await axios.post("http://www.raymond.tw:5000/upload_gpx", formData, {
 					headers: { "Content-Type": "multipart/form-data" }
 				});
 
 				const url = res.data.url;
-				const dataRes = await axios.get("https://394adb0daa3a.ngrok-free.app" + url);
+				const dataRes = await axios.get("http://www.raymond.tw:5000" + url);
 				const routes = dataRes.data.routes;
 
 				const colors = ["red", "blue", "green", "orange", "purple", "brown", "black", "pink"];
