@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Leaflet Taiwan 8x8 Grid</title>
+    <link rel="stylesheet" href="css/leaflet.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 50px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 6px 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .label {
+            font-size: 12px;
+            color: blue;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="map">
+        <div id="controls">
+            <input type="text" id="coordInput" placeholder="[[a,b],[c,d],[e,f]]" size="30">
+            <button onclick="zoomToNested()">縮放至區域</button>
+            <div id="areaInfo" style="margin-top:6px; font-weight:bold; color:darkgreen;"></div>
+        </div>
+    </div>
+    <script src="js/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([23.7, 121], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+        window.addEventListener('resize', () => map.invalidateSize());
+
+        const taiwanBounds = [[21.89550391268821, 120.03516303782406], [25.29966186182555, 122.00706917693259]];
+
+        const clickOverlays = [];   // 點擊用
+        const selectOverlays = [];  // 框選用
+
+        function clearClickOverlays() {
+            clickOverlays.forEach(o => map.removeLayer(o));
+            clickOverlays.length = 0;
+        }
+        function clearSelectOverlays() {
+            selectOverlays.forEach(o => map.removeLayer(o));
+            selectOverlays.length = 0;
+        }
+
+        // 畫最外層 8x8 grid
+        function drawGrid() {
+            const [south, west] = taiwanBounds[0];
+            const [north, east] = taiwanBounds[1];
+            const latStep = (north - south) / 8;
+            const lngStep = (east - west) / 8;
+            for (let y = 1; y <= 8; y++) {
+                for (let x = 1; x <= 8; x++) {
+                    const bounds = [
+                        [north - y * latStep, east - x * lngStep],
+                        [north - (y - 1) * latStep, east - (x - 1) * lngStep]
+                    ];
+                    const rect = L.rectangle(bounds, { color: "blue", weight: 1, fillOpacity: 0 });
+                    rect.addTo(map);
+                    rect.on("click", () => { document.getElementById("coordInput").value = `[[${x},${y}]]`; });
+                    L.marker([(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2], {
+                        icon: L.divIcon({ className: 'label', html: `(${x},${y})`, iconSize: [30, 12] })
+                    }).addTo(map);
+                }
+            }
+        }
+        drawGrid();
+
+        function zoomToNested() {
+            clearClickOverlays();
+            let inputVal = document.getElementById("coordInput").value;
+            let coords;
+            try {
+                let parsed = JSON.parse(inputVal);
+                coords = Array.isArray(parsed) ? parsed : parsed.grid;
+            } catch (e) {
+                alert("輸入格式錯誤");
+                return;
+            }
+            if (coords.length > 3) coords = coords.slice(0, 3);
+
+            let bounds = taiwanBounds;
+            let colorSeq = ["orange", "red", "purple"];
+            coords.forEach((c, idx) => {
+                const [south, west] = bounds[0];
+                const [north, east] = bounds[1];
+                const latStep = (north - south) / 8;
+                const lngStep = (east - west) / 8;
+                const x = c[0], y = c[1];
+                bounds = [
+                    [north - y * latStep, east - x * lngStep],
+                    [north - (y - 1) * latStep, east - (x - 1) * lngStep]
+                ];
+                const rect = L.rectangle(bounds, { color: colorSeq[idx] || "black", weight: 2, fillOpacity: 0 });
+                rect.addTo(map);
+                clickOverlays.push(rect);
+            });
+
+            map.fitBounds(bounds);
+        }
+
+        // === 點擊事件 ===
+        map.on("click", function (e) {
+            let latlng = e.latlng;
+            let bounds = taiwanBounds;
+            let coords = [];
+
+            for (let level = 0; level < 3; level++) {
+                const [south, west] = bounds[0];
+                const [north, east] = bounds[1];
+                const latStep = (north - south) / 8;
+                const lngStep = (east - west) / 8;
+
+                let x = Math.floor((east - latlng.lng) / lngStep) + 1;
+                let y = Math.floor((north - latlng.lat) / latStep) + 1;
+                x = Math.min(Math.max(x, 1), 8);
+                y = Math.min(Math.max(y, 1), 8);
+
+                coords.push([x, y]);
+
+                bounds = [
+                    [north - y * latStep, east - x * lngStep],
+                    [north - (y - 1) * latStep, east - (x - 1) * lngStep]
+                ];
+            }
+
+            document.getElementById("coordInput").value = JSON.stringify(coords);
+
+            clearClickOverlays();
+            let rect = L.rectangle(bounds, { color: "purple", weight: 2, fillOpacity: 0.1 });
+            rect.addTo(map);
+            clickOverlays.push(rect);
+
+            L.popup()
+                .setLatLng(latlng)
+                .setContent("格網座標: " + JSON.stringify(coords) +
+                    "<br>點擊 WGS84: [" + latlng.lat.toFixed(6) + ", " + latlng.lng.toFixed(6) + "]")
+                .openOn(map);
+
+            map.fitBounds(bounds);
+        });
+
+        // === 框選功能 ===
+        let startLatLng = null;
+        let selectRect = null;
+
+        map.on("mousedown", function (e) {
+            startLatLng = e.latlng;
+            if (selectRect) { map.removeLayer(selectRect); selectRect = null; }
+            map.dragging.disable();
+        });
+
+        map.on("mousemove", function (e) {
+            if (!startLatLng) return;
+            let bounds = L.latLngBounds(startLatLng, e.latlng);
+            if (selectRect) map.removeLayer(selectRect);
+            selectRect = L.rectangle(bounds, { color: "green", weight: 1, fillOpacity: 0.1 });
+            selectRect.addTo(map);
+        });
+
+        map.on("mouseup", function (e) {
+            if (!startLatLng) return;
+            let endLatLng = e.latlng;
+            let bounds = L.latLngBounds(startLatLng, endLatLng);
+            if (selectRect) map.removeLayer(selectRect);
+
+            // 每次框選先清除之前的結果
+            clearSelectOverlays();
+
+            let selectedCells = [];
+            let [south, west] = taiwanBounds[0];
+            let [north, east] = taiwanBounds[1];
+            let latStep1 = (north - south) / 8;
+            let lngStep1 = (east - west) / 8;
+
+            for (let y1 = 1; y1 <= 8; y1++) {
+                for (let x1 = 1; x1 <= 8; x1++) {
+                    let b1 = [
+                        [north - y1 * latStep1, east - x1 * lngStep1],
+                        [north - (y1 - 1) * latStep1, east - (x1 - 1) * lngStep1]
+                    ];
+                    let [s1, w1] = b1[0];
+                    let [n1, e1] = b1[1];
+
+                    let latStep2 = (n1 - s1) / 8;
+                    let lngStep2 = (e1 - w1) / 8;
+
+                    for (let y2 = 1; y2 <= 8; y2++) {
+                        for (let x2 = 1; x2 <= 8; x2++) {
+                            let b2 = [
+                                [n1 - y2 * latStep2, e1 - x2 * lngStep2],
+                                [n1 - (y2 - 1) * latStep2, e1 - (x2 - 1) * lngStep2]
+                            ];
+                            let [s2, w2] = b2[0];
+                            let [n2, e2] = b2[1];
+
+                            let latStep3 = (n2 - s2) / 8;
+                            let lngStep3 = (e2 - w2) / 8;
+
+                            for (let y3 = 1; y3 <= 8; y3++) {
+                                for (let x3 = 1; x3 <= 8; x3++) {
+                                    let b3 = [
+                                        [n2 - y3 * latStep3, e2 - x3 * lngStep3],
+                                        [n2 - (y3 - 1) * latStep3, e2 - (x3 - 1) * lngStep3]
+                                    ];
+                                    let cellBounds = L.latLngBounds(b3);
+
+                                    if (bounds.intersects(cellBounds)) {
+                                        selectedCells.push([[x1, y1], [x2, y2], [x3, y3]]);
+                                        let rect = L.rectangle(b3, { color: "purple", weight: 1, fillOpacity: 0.2 });
+                                        rect.addTo(map);
+                                        selectOverlays.push(rect);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            let area = selectedCells.length * 0.29;
+            document.getElementById("areaInfo").innerText =
+                `框選到 ${selectedCells.length} 格，約 ${area.toFixed(2)} km²`;
+
+            startLatLng = null;
+            map.dragging.enable();
+        });
+    </script>
+</body>
+
+</html>
