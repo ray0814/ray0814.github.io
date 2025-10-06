@@ -3,13 +3,26 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>座標轉換與地圖顯示系統</title>
     <style>
+        :root {
+            --map-height: 400px;
+            --base-font-size: 16px;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
         body {
             font-family: "Segoe UI", Arial, sans-serif;
             margin: 40px;
             background: #f9fafc;
             color: #333;
+            font-size: var(--base-font-size);
+            transition: font-size .15s;
         }
 
         h1 {
@@ -18,7 +31,8 @@
         }
 
         .converter {
-            max-width: 600px;
+            width: 95%;
+            max-width: 720px;
             margin: 0 auto;
             padding: 20px 30px;
             background: white;
@@ -29,14 +43,14 @@
         label {
             font-weight: bold;
             display: block;
-            margin-top: 20px;
+            margin-top: 18px;
         }
 
         select,
         input {
             width: 100%;
             padding: 10px;
-            margin-top: 5px;
+            margin-top: 6px;
             font-size: 1rem;
             border-radius: 6px;
             border: 1px solid #ccc;
@@ -46,14 +60,14 @@
         button {
             width: 100%;
             padding: 12px;
-            margin-top: 25px;
-            font-size: 1.1rem;
+            margin-top: 20px;
+            font-size: 1.05rem;
             border: none;
             border-radius: 8px;
             background: #0078d7;
             color: white;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.18s;
         }
 
         button:hover {
@@ -62,13 +76,13 @@
 
         .result,
         .error {
-            margin-top: 25px;
-            font-size: 1.1rem;
+            margin-top: 18px;
+            font-size: 1.02rem;
+            white-space: pre-line;
         }
 
         .result {
             color: #007a33;
-            white-space: pre-line;
         }
 
         .error {
@@ -78,11 +92,61 @@
 
         #map-frame {
             width: 100%;
-            height: 400px;
-            margin-top: 30px;
+            height: var(--map-height);
+            margin-top: 22px;
             border: none;
             border-radius: 12px;
             display: none;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .dms-row {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .small-btn {
+            padding: 6px 10px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            background: #efefef;
+        }
+
+        .copy-btn {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                margin: 12px;
+            }
+
+            .converter {
+                padding: 14px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 1.15rem;
+            }
+
+            button {
+                font-size: 1rem;
+            }
+
+            :root {
+                --base-font-size: 15px;
+            }
+
+            #map-frame {
+                height: 45vh;
+            }
         }
     </style>
 </head>
@@ -90,8 +154,9 @@
 <body>
     <h1>座標轉換系統</h1>
     <div class="converter">
-        <label for="input">輸入座標（以逗號分隔，例如：121.1234, 23.4567 或 306000, 2770000）</label>
-        <input id="input" type="text" placeholder="請輸入座標..." />
+        <label for="input">輸入座標（以逗號分隔，例如：121.1234, 23.4567 或 306000, 2770000；也支援度分秒如：121 7 24.560 E, 23 27 24.120
+            N）</label>
+        <input id="input" type="text" placeholder="請輸入座標...（Decimal 或 DMS）" />
 
         <div id="error" class="error"></div>
 
@@ -118,7 +183,7 @@
     </div>
 
     <script>
-        // ---------- Coordinate conversion functions ----------
+        // ---------- Coordinate conversion functions (unchanged) ----------
         function lonlat_to_97(lon, lat) {
             const dx = 250000;
             const a = 6378137.0;
@@ -209,6 +274,44 @@
             return "unknown";
         }
 
+        // ---------- DMS conversion utilities ----------
+        function decimalToDMS(dec, isLon) {
+            if (typeof dec !== 'number' || isNaN(dec)) return '';
+            const sign = dec >= 0 ? 1 : -1;
+            const abs = Math.abs(dec);
+            const deg = Math.floor(abs);
+            const min = Math.floor((abs - deg) * 60);
+            const sec = ((abs - deg) * 60 - min) * 60;
+            let hemi = '';
+            if (isLon) hemi = sign >= 0 ? 'E' : 'W';
+            else hemi = sign >= 0 ? 'N' : 'S';
+            // 度 分 秒 以空格分隔（依使用者要求）
+            return `${deg} ${min} ${sec.toFixed(3)} ${hemi}`;
+        }
+
+        function dmsStringToDecimal(s) {
+            if (!s || typeof s !== 'string') return null;
+            const orig = s.trim();
+            // 先找半球字母（N/S/E/W）
+            const hemiMatch = orig.match(/[NSEW]/i);
+            let hemi = null;
+            if (hemiMatch) hemi = hemiMatch[0].toUpperCase();
+            // 取出數字序列（度 分 秒）
+            // 允許各種符號分隔
+            const cleaned = orig.replace(/[°º"'′″,]/g, ' ');
+            const nums = cleaned.match(/-?\d+(?:\.\d+)?/g);
+            if (!nums || nums.length === 0) return null;
+            const deg = parseFloat(nums[0]);
+            const min = nums.length > 1 ? parseFloat(nums[1]) : 0;
+            const sec = nums.length > 2 ? parseFloat(nums[2]) : 0;
+            if (isNaN(deg) || isNaN(min) || isNaN(sec)) return null;
+            let decimal = Math.abs(deg) + (min / 60) + (sec / 3600);
+            // 若度本身帶有負號或半球是S/W，則為負
+            if (deg < 0) decimal = -decimal;
+            if (hemi === 'S' || hemi === 'W') decimal = -Math.abs(decimal);
+            return decimal;
+        }
+
         // ---------- UI & Conversion Logic ----------
         document.getElementById("convert").addEventListener("click", convert);
         document.getElementById("input").addEventListener("keydown", (e) => {
@@ -216,7 +319,7 @@
         });
 
         function convert() {
-            const input = document.getElementById("input").value.trim();
+            const inputRaw = document.getElementById("input").value.trim();
             const errorDiv = document.getElementById("error");
             const resultDiv = document.getElementById("result");
             const mapFrame = document.getElementById("map-frame");
@@ -224,9 +327,29 @@
             resultDiv.textContent = "";
             mapFrame.style.display = "none";
 
-            const parts = input.split(",").map(v => parseFloat(v.trim()));
+            if (!inputRaw) {
+                errorDiv.textContent = "❌ 請先輸入座標。";
+                return;
+            }
+
+            // 以逗號切分為兩個欄位（仍要求使用者以逗號分隔不同座標元件）
+            const rawParts = inputRaw.split(',').map(v => v.trim());
+            if (rawParts.length !== 2) {
+                errorDiv.textContent = "❌ 請以逗號分隔兩個座標值（例如：121.5, 23.4 或 121 7 24.56 E, 23 27 24.12 N）。";
+                return;
+            }
+
+            // 嘗試將每一欄解析為數字（支援 decimal 或 DMS）
+            const parts = rawParts.map(v => {
+                const n = parseFloat(v);
+                if (!isNaN(n) && /^\s*[+-]?\d+(?:\.\d+)?\s*$/.test(v)) return n;
+                // 否則嘗試解析 DMS 字串
+                const d = dmsStringToDecimal(v);
+                return d === null ? NaN : d;
+            });
+
             if (parts.length !== 2 || parts.some(isNaN)) {
-                errorDiv.textContent = "❌ 輸入格式錯誤，請以逗號分隔兩個數字（例如：121.5, 23.4）";
+                errorDiv.textContent = "❌ 輸入格式錯誤或無法解析（請以逗號分隔兩個數字或 DMS 字串）。";
                 return;
             }
 
@@ -266,9 +389,11 @@
                 }
 
                 const [x, y] = result;
-                resultDiv.textContent = `✅ 轉換結果：\nX / Lon：${x.toFixed(6)}\nY / Lat：${y.toFixed(6)}`;
 
-                // 顯示地圖（若結果為經緯度或可轉為經緯度）
+                // 準備要顯示的內容（含 DMS）
+                let displayText = `✅ 轉換結果：\nX / Lon：${x.toFixed(6)}\nY / Lat：${y.toFixed(6)}`;
+
+                // 若最終可轉為經緯度，顯示經緯度（Decimal + DMS，DMS 以空格間隔）
                 let lonlat;
                 if (toSel.value === "lonlat") {
                     lonlat = [x, y];
@@ -280,15 +405,68 @@
 
                 if (lonlat) {
                     const [lon, lat] = lonlat;
+                    const lonDMS = decimalToDMS(lon, true);
+                    const latDMS = decimalToDMS(lat, false);
+                    displayText += `\n\n經緯度 (Decimal):\nLon: ${lon.toFixed(6)}, Lat: ${lat.toFixed(6)}`;
+                    displayText += `\n\n經緯度 (DMS, 空格分隔):\nLon: ${lonDMS}\nLat: ${latDMS}`;
+
+                    // 更新結果區塊（使用 innerHTML 以便加入複製按鈕）
+                    resultDiv.innerHTML = displayText.replace(/\n/g, '<br>') +
+                        `<div class="dms-row">` +
+                        `<button class="small-btn copy-btn" data-copy="${lon.toFixed(6)}">複製 Lon (Decimal)</button>` +
+                        `<button class="small-btn copy-btn" data-copy="${lat.toFixed(6)}">複製 Lat (Decimal)</button>` +
+                        `<button class="small-btn copy-btn" data-copy="${lonDMS}">複製 Lon (DMS)</button>` +
+                        `<button class="small-btn copy-btn" data-copy="${latDMS}">複製 Lat (DMS)</button>` +
+                        `</div>`;
+
+                    // 顯示地圖
                     const mapUrl = `https://www.google.com/maps?q=${lat},${lon}&hl=zh-TW&z=15&output=embed`;
                     mapFrame.src = mapUrl;
                     mapFrame.style.display = "block";
+                } else {
+                    // 無法得出經緯度，僅顯示數值
+                    resultDiv.textContent = displayText;
                 }
 
             } catch (e) {
                 errorDiv.textContent = "❌ 轉換過程發生錯誤：" + e.message;
             }
         }
+
+        // copy button (事件委派)
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.matches('.copy-btn')) {
+                const txt = e.target.getAttribute('data-copy') || '';
+                if (!txt) return;
+                navigator.clipboard && navigator.clipboard.writeText(txt).then(() => {
+                    const old = e.target.textContent;
+                    e.target.textContent = '已複製';
+                    setTimeout(() => e.target.textContent = old, 1400);
+                }).catch(() => {
+                    alert('無法複製到剪貼簿');
+                });
+            }
+        });
+
+        // ---------- responsive adjustments ----------
+        function adjustLayout() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const root = document.documentElement;
+            // map 高度隨視窗變化，但限制範圍
+            const mapHeight = Math.round(Math.max(180, Math.min(height * 0.55, 720)));
+            root.style.setProperty('--map-height', mapHeight + 'px');
+            // 根字型隨寬度微調
+            if (width < 380) root.style.setProperty('--base-font-size', '14px');
+            else if (width < 520) root.style.setProperty('--base-font-size', '15px');
+            else root.style.setProperty('--base-font-size', '16px');
+        }
+
+        window.addEventListener('resize', adjustLayout);
+        window.addEventListener('orientationchange', adjustLayout);
+        // 初始呼叫
+        adjustLayout();
+
     </script>
 </body>
 
