@@ -391,7 +391,8 @@
                 const [x, y] = result;
 
                 // 準備要顯示的內容（含 DMS）
-                let displayText = `✅ 轉換結果：\nX / Lon：${x.toFixed(6)}\nY / Lat：${y.toFixed(6)}`;
+                // let displayText = `✅ 轉換結果：\nX / Lon：${x.toFixed(6)}\nY / Lat：${y.toFixed(6)}`;
+                let displayText = `✅ 轉換結果：${y.toFixed(6)}, ${x.toFixed(6)}`;
 
                 // 若最終可轉為經緯度，顯示經緯度（Decimal + DMS，DMS 以空格間隔）
                 let lonlat;
@@ -407,17 +408,18 @@
                     const [lon, lat] = lonlat;
                     const lonDMS = decimalToDMS(lon, true);
                     const latDMS = decimalToDMS(lat, false);
-                    displayText += `\n\n經緯度 (Decimal):\nLon: ${lon.toFixed(6)}, Lat: ${lat.toFixed(6)}`;
-                    displayText += `\n\n經緯度 (DMS, 空格分隔):\nLon: ${lonDMS}\nLat: ${latDMS}`;
+                    // displayText += `\n\n經緯度 (Decimal):\nLon: ${lon.toFixed(6)}, Lat: ${lat.toFixed(6)}`;
+                    // displayText += `\n\n經緯度 (DMS, 空格分隔):\nLon: ${lonDMS}\nLat: ${latDMS}`;
 
                     // 更新結果區塊（使用 innerHTML 以便加入複製按鈕）
-                    resultDiv.innerHTML = displayText.replace(/\n/g, '<br>') +
-                        `<div class="dms-row">` +
-                        `<button class="small-btn copy-btn" data-copy="${lon.toFixed(6)}">複製 Lon (Decimal)</button>` +
-                        `<button class="small-btn copy-btn" data-copy="${lat.toFixed(6)}">複製 Lat (Decimal)</button>` +
-                        `<button class="small-btn copy-btn" data-copy="${lonDMS}">複製 Lon (DMS)</button>` +
-                        `<button class="small-btn copy-btn" data-copy="${latDMS}">複製 Lat (DMS)</button>` +
-                        `</div>`;
+                    resultDiv.innerHTML = displayText;
+                    // resultDiv.innerHTML = displayText.replace(/\n/g, '<br>') +
+                    //     `<div class="dms-row">` +
+                    //     `<button class="small-btn copy-btn" data-copy="${lon.toFixed(6)}">複製 Lon (Decimal)</button>` +
+                    //     `<button class="small-btn copy-btn" data-copy="${lat.toFixed(6)}">複製 Lat (Decimal)</button>` +
+                    //     `<button class="small-btn copy-btn" data-copy="${lonDMS}">複製 Lon (DMS)</button>` +
+                    //     `<button class="small-btn copy-btn" data-copy="${latDMS}">複製 Lat (DMS)</button>` +
+                    //     `</div>`;
 
                     // 顯示地圖
                     const mapUrl = `https://www.google.com/maps?q=${lat},${lon}&hl=zh-TW&z=15&output=embed`;
