@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>座標轉換與地圖顯示系統</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 40px;
+            background: #f9fafc;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0066cc;
+        }
+
+        .converter {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 20px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            background: #0078d7;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #005fa3;
+        }
+
+        .result,
+        .error {
+            margin-top: 25px;
+            font-size: 1.1rem;
+        }
+
+        .result {
+            color: #007a33;
+            white-space: pre-line;
+        }
+
+        .error {
+            color: #cc0000;
+            font-weight: bold;
+        }
+
+        #map-frame {
+            width: 100%;
+            height: 400px;
+            margin-top: 30px;
+            border: none;
+            border-radius: 12px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>座標轉換系統</h1>
+    <div class="converter">
+        <label for="input">輸入座標（以逗號分隔，例如：121.1234, 23.4567 或 306000, 2770000）</label>
+        <input id="input" type="text" placeholder="請輸入座標..." />
+
+        <div id="error" class="error"></div>
+
+        <label for="from">來源座標系統</label>
+        <select id="from">
+            <option value="auto">自動判斷</option>
+            <option value="lonlat">LonLat（經緯度）</option>
+            <option value="twd97">TWD97</option>
+            <option value="twd67">TWD67</option>
+        </select>
+
+        <label for="to">目標座標系統</label>
+        <select id="to">
+            <option value="lonlat">LonLat（經緯度）</option>
+            <option value="twd97">TWD97</option>
+            <option value="twd67">TWD67</option>
+        </select>
+
+        <button id="convert">轉換</button>
+
+        <div id="result" class="result"></div>
+
+        <iframe id="map-frame" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+    <script>
+        // ---------- Coordinate conversion functions ----------
+        function lonlat_to_97(lon, lat) {
+            const dx = 250000;
+            const a = 6378137.0;
+            const b = 6356752.314245;
+            const long0 = 121 * Math.PI / 180;
+            const k0 = 0.9999;
+            const e = Math.sqrt(1 - (b ** 2) / (a ** 2));
+            const e2 = e ** 2 / (1 - e ** 2);
+            const n = (a - b) / (a + b);
+            const latRad = lat * Math.PI / 180;
+            const lonRad = lon * Math.PI / 180;
+            const nu = a / Math.sqrt(1 - (e ** 2) * (Math.sin(latRad) ** 2));
+            const p = lonRad - long0;
+
+            const A = a * (1 - n + (5 / 4) * (n ** 2 - n ** 3) + (81 / 64) * (n ** 4 - n ** 5));
+            const B = (3 * a * n / 2) * (1 - n + (7 / 8) * (n ** 2 - n ** 3) + (55 / 64) * (n ** 4 - n ** 5));
+            const C = (15 * a * (n ** 2) / 16) * (1 - n + (3 / 4) * (n ** 2 - n ** 3));
+            const D = (35 * a * (n ** 3) / 48) * (1 - n + (11 / 16) * (n ** 2 - n ** 3));
+            const E = (315 * a * (n ** 4) / 51) * (1 - n);
+            const S = A * latRad - B * Math.sin(2 * latRad) + C * Math.sin(4 * latRad) - D * Math.sin(6 * latRad) + E * Math.sin(8 * latRad);
+            const K1 = S * k0;
+            const K2 = k0 * nu * Math.sin(2 * latRad) / 4;
+            const K3 = (k0 * nu * Math.sin(latRad) * (Math.cos(latRad) ** 3) / 24) *
+                (5 - Math.tan(latRad) ** 2 + 9 * e2 * (Math.cos(latRad) ** 2) + 4 * (e2 ** 2) * (Math.cos(latRad) ** 4));
+            const y = K1 + K2 * (p ** 2) + K3 * (p ** 4);
+            const K4 = k0 * nu * Math.cos(latRad);
+            const K5 = (k0 * nu * (Math.cos(latRad) ** 3) / 6) * (1 - Math.tan(latRad) ** 2 + e2 * (Math.cos(latRad) ** 2));
+            const x = K4 * p + K5 * (p ** 3) + dx;
+            return [x, y];
+        }
+
+        function twd97_to_lonlat(x, y) {
+            const a = 6378137, b = 6356752.314245;
+            const long0 = 121 * Math.PI / 180;
+            const k0 = 0.9999, dx = 250000, dy = 0;
+            const e = Math.sqrt(1 - (b ** 2) / (a ** 2));
+            x -= dx; y -= dy;
+            const M = y / k0;
+            const mu = M / (a * (1 - e ** 2 / 4 - 3 * e ** 4 / 64 - 5 * e ** 6 / 256));
+            const e1 = (1 - Math.sqrt(1 - e ** 2)) / (1 + Math.sqrt(1 - e ** 2));
+            const j1 = 3 * e1 / 2 - 27 * e1 ** 3 / 32;
+            const j2 = 21 * e1 ** 2 / 16 - 55 * e1 ** 4 / 32;
+            const j3 = 151 * e1 ** 3 / 96;
+            const j4 = 1097 * e1 ** 4 / 512;
+            const fp = mu + j1 * Math.sin(2 * mu) + j2 * Math.sin(4 * mu) + j3 * Math.sin(6 * mu) + j4 * Math.sin(8 * mu);
+            const e2 = (e * a / b) ** 2;
+            const c1 = e2 * Math.cos(fp) ** 2;
+            const t1 = Math.tan(fp) ** 2;
+            const r1 = a * (1 - e ** 2) / Math.pow(1 - e ** 2 * Math.sin(fp) ** 2, 1.5);
+            const n1 = a / Math.sqrt(1 - e ** 2 * Math.sin(fp) ** 2);
+            const d = x / (n1 * k0);
+            const lat = fp - (n1 * Math.tan(fp) / r1) * (d ** 2 / 2 - (5 + 3 * t1 + 10 * c1 - 4 * c1 ** 2 - 9 * e2) * d ** 4 / 24 + (61 + 90 * t1 + 298 * c1 + 45 * t1 ** 2 - 3 * c1 ** 2 - 252 * e2) * d ** 6 / 720);
+            const lon = long0 + (d - (1 + 2 * t1 + c1) * d ** 3 / 6 + (5 - 2 * c1 + 28 * t1 - 3 * c1 ** 2 + 8 * e2 + 24 * t1 ** 2) * d ** 5 / 120) / Math.cos(fp);
+            return [lon * 180 / Math.PI, lat * 180 / Math.PI];
+        }
+
+        function twd67_to_97(x, y) {
+            const A = 0.00001549, B = 0.000006521;
+            const x97 = x + 807.8 + A * x + B * y;
+            const y97 = y - 248.6 + A * y + B * x;
+            return [x97, y97];
+        }
+
+        function twd97_to_67(x, y) {
+            const A = 0.00001549, B = 0.000006521;
+            const x67 = x - 807.8 - A * x - B * y;
+            const y67 = y + 248.6 - A * y - B * x;
+            return [x67, y67];
+        }
+
+        function twd67_to_lonlat(x, y) {
+            const [x97, y97] = twd67_to_97(x, y);
+            return twd97_to_lonlat(x97, y97);
+        }
+
+        function lonlat_to_67(lon, lat) {
+            const [x97, y97] = lonlat_to_97(lon, lat);
+            return twd97_to_67(x97, y97);
+        }
+
+        function autoDetect(x, y) {
+            if (x > 1000 && y > 1000) {
+                if (x > 200000 && y > 2500000) return "twd97";
+                return "twd67";
+            } else if (Math.abs(x) <= 180 && Math.abs(y) <= 90) {
+                return "lonlat";
+            }
+            return "unknown";
+        }
+
+        // ---------- UI & Conversion Logic ----------
+        document.getElementById("convert").addEventListener("click", convert);
+        document.getElementById("input").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") convert();
+        });
+
+        function convert() {
+            const input = document.getElementById("input").value.trim();
+            const errorDiv = document.getElementById("error");
+            const resultDiv = document.getElementById("result");
+            const mapFrame = document.getElementById("map-frame");
+            errorDiv.textContent = "";
+            resultDiv.textContent = "";
+            mapFrame.style.display = "none";
+
+            const parts = input.split(",").map(v => parseFloat(v.trim()));
+            if (parts.length !== 2 || parts.some(isNaN)) {
+                errorDiv.textContent = "❌ 輸入格式錯誤，請以逗號分隔兩個數字（例如：121.5, 23.4）";
+                return;
+            }
+
+            const [a, b] = parts;
+            const fromSel = document.getElementById("from");
+            const toSel = document.getElementById("to");
+
+            let from = fromSel.value;
+            if (from === "auto") {
+                from = autoDetect(a, b);
+                if (from === "unknown") {
+                    errorDiv.textContent = "⚠️ 無法判斷來源座標系統，請手動選擇。";
+                    return;
+                }
+                fromSel.value = from;
+            }
+
+            let result;
+            try {
+                if (from === toSel.value) {
+                    result = [a, b];
+                } else if (from === "lonlat" && toSel.value === "twd97") {
+                    result = lonlat_to_97(a, b);
+                } else if (from === "lonlat" && toSel.value === "twd67") {
+                    result = lonlat_to_67(a, b);
+                } else if (from === "twd97" && toSel.value === "lonlat") {
+                    result = twd97_to_lonlat(a, b);
+                } else if (from === "twd67" && toSel.value === "lonlat") {
+                    result = twd67_to_lonlat(a, b);
+                } else if (from === "twd67" && toSel.value === "twd97") {
+                    result = twd67_to_97(a, b);
+                } else if (from === "twd97" && toSel.value === "twd67") {
+                    result = twd97_to_67(a, b);
+                } else {
+                    errorDiv.textContent = "⚠️ 不支援此轉換組合。";
+                    return;
+                }
+
+                const [x, y] = result;
+                resultDiv.textContent = `✅ 轉換結果：\nX / Lon：${x.toFixed(6)}\nY / Lat：${y.toFixed(6)}`;
+
+                // 顯示地圖（若結果為經緯度或可轉為經緯度）
+                let lonlat;
+                if (toSel.value === "lonlat") {
+                    lonlat = [x, y];
+                } else if (toSel.value === "twd97") {
+                    lonlat = twd97_to_lonlat(x, y);
+                } else if (toSel.value === "twd67") {
+                    lonlat = twd67_to_lonlat(x, y);
+                }
+
+                if (lonlat) {
+                    const [lon, lat] = lonlat;
+                    const mapUrl = `https://www.google.com/maps?q=${lat},${lon}&hl=zh-TW&z=15&output=embed`;
+                    mapFrame.src = mapUrl;
+                    mapFrame.style.display = "block";
+                }
+
+            } catch (e) {
+                errorDiv.textContent = "❌ 轉換過程發生錯誤：" + e.message;
+            }
+        }
+    </script>
+</body>
+
+</html>
