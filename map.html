@@ -1,97 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
+
 <head>
-	<title>地圖</title>
-	<meta charset="utf-8">
-	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<link href="css/leaflet.css" rel="stylesheet">
+	<meta charset="UTF-8">
+	<title>好用地圖</title>
+	<link rel="stylesheet" href="css/leaflet.css" />
+	<link rel="stylesheet" href="css/leaflet.awesome-markers.css" />
+	<link rel="stylesheet" href="css/leaflet-geoman.css" />
+	<link rel="stylesheet" href="css/leaflet-measure-3.1.0.css" />
+	<link rel="stylesheet" href="css/leaflet.draw-1.0.4.css" />
+	<link rel="stylesheet" href="css/leaflet-easy-button-2.4.0.css" />
+	<link rel="stylesheet" href="css/L.Control.Locate.min.css" />
+	<link rel="stylesheet" href="css/Leaflet.BigImage.css" />
+	<link rel="stylesheet" href="css/Control.MiniMap.css" />
+	<link rel="stylesheet" href="css/font-awesome-all-5.15.4.css" />
 	<style>
-	html, body, #map {
-		height: 100%;
-		margin: 0;
-		padding: 0;
-	}
-	.mouse-position {
-		padding: 5px 10px;
-		background: rgba(255, 255, 255, 0.8);
-		font-size: 14px;
-		font-family: Arial, sans-serif;
-	}
-	.toolbar {
-		position: absolute;
-		top: 10px;
-		left: 50%;
-		transform: translateX(-50%);
-		background: rgba(255, 255, 255, 0.9);
-		padding: 8px 12px;
-		border-radius: 5px;
-		box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-		z-index: 1000;
-		font-family: Arial, sans-serif;
-	}
-	.toolbar input {
-		width: 180px;
-		padding: 4px 6px;
-		margin-right: 6px;
-		font-size: 14px;
-	}
-	.toolbar button {
-		padding: 5px 10px;
-		font-size: 14px;
-		cursor: pointer;
-	}
+		html,
+		body,
+		#map {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		.mouse-position {
+			padding: 5px 10px;
+			background: rgba(255, 255, 255, 0.8);
+			font-size: 14px;
+			font-family: Arial, sans-serif;
+		}
+
+		.search-control {
+			background: white;
+			border-radius: 6px;
+			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+			padding: 4px;
+		}
+
+		.search-toggle {
+			cursor: pointer;
+			font-size: 18px;
+			text-align: center;
+		}
+
+		.search-panel {
+			margin-top: 4px;
+		}
+
+		.search-panel input {
+			width: 140px;
+			margin-bottom: 4px;
+			font-size: 13px;
+			padding: 2px;
+		}
+
+		.search-panel button {
+			width: 100%;
+			font-size: 13px;
+			cursor: pointer;
+		}
+
+		.leaflet-bottom.leaflet-left {
+			display: flex;
+			flex-direction: row;
+			/* 水平排列 */
+			align-items: center;
+			/* 垂直置中 */
+		}
+
+		.leaflet-control-scale {
+			order: 1;
+			/* 排第一個 */
+			margin-right: 8px;
+			/* 比例尺和座標間距 */
+		}
+
+		.mouse-position {
+			order: 2;
+			/* 排第二個 */
+			background: rgba(255, 255, 255, 0.8);
+			padding: 2px 6px;
+			font-size: 13px;
+			font-family: Arial, sans-serif;
+		}
+
+		.upload-control {
+			background: white;
+			border-radius: 6px;
+			box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+			padding: 4px;
+		}
+
+		.upload-toggle {
+			cursor: pointer;
+			font-size: 18px;
+			text-align: center;
+		}
+
+		.upload-panel {
+			margin-top: 4px;
+		}
+
+		.upload-panel input {
+			display: block;
+			margin-bottom: 4px;
+			font-size: 13px;
+		}
+
+		.upload-panel button {
+			display: block;
+			width: 100%;
+			margin-bottom: 2px;
+			font-size: 13px;
+			cursor: pointer;
+		}
 	</style>
-	<script src="js/proj4-2.19.3-src.js"></script>
 </head>
+
 <body>
 	<div id="map"></div>
-	<div class="toolbar">
-		<input id="coord-input" placeholder="輸入座標: 25.03,121.56" type="text">
-		<button onclick="searchCoords()">🔍 搜尋座標</button>
-		<button onclick="locateUser()">📍 回到定位</button>
-	</div>
-	<script src="js/leaflet-1.9.3-src.js"></script> 
-	<script src="js/baseLayers2.js"></script> 
+	<!-- Leaflet & Plugins -->
+	<script src="js/leaflet-1.9.3-src.js"></script>
+	<script src="js/proj4-2.19.3-src.js"></script>
+	<script src="js/baseLayers.js"></script>
+	<script src="js/L.Control.Locate.min.js"></script>
+	<script src="js/Leaflet.BigImage.js"></script>
+	<script src="js/Control.MiniMap.js"></script>
+	<script src="js/leaflet-geoman.js"></script>
+	<script src="js/leaflet.awesome-markers.js"></script>
+	<script src="js/togeojson-0.16.0.js"></script>
+	<script src="js/leaflet.filelayer-1.2.0.js"></script>
+	<script src="js/leaflet-measure-3.1.0.js"></script>
+	<script src="js/leaflet.draw-1.0.4.js"></script>
+	<script src="js/leaflet.geometryutil.js"></script>
+	<script src="js/leaflet-easy-button-2.4.0.js"></script>
+	<script src="js/axios-1.11.0.js"></script>
+
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
+		let map;              // 全域變數
+		let gpxLayers = {};   // 存每次上傳的路線
+		let overlayControl;   // 全域圖層控制器
+
+		document.addEventListener("DOMContentLoaded", function () {
 			const defaultCenter = [24.439043218408983, 121.7528521305105];
-			window.map = L.map("map").setView(defaultCenter, 16);
+			map = L.map("map").setView(defaultCenter, 16);
+
+			// 預設底圖
 			baseLayers['臺灣通用電子地圖'].addTo(map);
 			L.control.layers(baseLayers).addTo(map);
-			L.control.scale().addTo(map); // 加入比例尺
 
-			map.on("mousemove", function(e) {
-				const lat = e.latlng.lat.toFixed(6);
-				const lng = e.latlng.lng.toFixed(6);
-				const coordDiv = document.getElementById("wgs84-coords");
-				if (coordDiv) {
-					coordDiv.textContent = `座標：${lat}, ${lng}`;
-				}
+			// 定位
+			L.control.locate({ strings: { title: "定位" } }).addTo(map);
+
+			// 比例尺
+			L.control.scale().addTo(map);
+
+			// MiniMap
+			var osm2 = baseLayers['正射影像圖(通用)'];
+			new L.Control.MiniMap(osm2, { toggleDisplay: true }).addTo(map);
+
+			// 匯出大圖
+			L.control.bigImage({ position: "topright" }).addTo(map);
+
+			// 上傳檔案 (GeoJSON, KML, GPX)
+			L.Control.fileLayerLoad({
+				layer: L.geoJson,
+				layerOptions: { style: { color: 'red' } },
+				addToMap: true,
+				fileSizeLimit: 1024,
+				formats: ['.geojson', '.kml', '.gpx']
+			}).addTo(map);
+
+			// GeoMan 編輯
+			map.pm.addControls({
+				position: 'topleft',
+				drawCircleMarker: false,
+				rotateMode: false
 			});
-			
-			const userMarker = L.marker(defaultCenter).addTo(map).bindPopup("預設中心點").openPopup();
-			const userPosDiv = L.DomUtil.create('div', 'mouse-position');
-			userPosDiv.style.marginBottom = '5px';
-			userPosDiv.style.fontWeight = 'bold';
-			userPosDiv.innerHTML = "使用者座標：無法取得";
-			const userPosControl = L.control({ position: 'bottomleft' });
-			userPosControl.onAdd = () => userPosDiv;
-			userPosControl.addTo(map);
-			
+
+			// 顯示滑鼠座標
 			const MousePosition = L.Control.extend({
-				onAdd: function(map) {
+				options: { position: 'bottomleft' },
+				onAdd: function (map) {
 					this._div = L.DomUtil.create('div', 'mouse-position');
 					this.update();
 					map.on('mousemove', this._onMouseMove, this);
 					return this._div;
 				},
-				onRemove: function(map) {
-					map.off('mousemove', this._onMouseMove, this);
-				},
-				_onMouseMove: function(e) {
+				_onMouseMove: function (e) {
 					this.update(e.latlng);
 				},
-				update: function(latlng) {
+				update: function (latlng) {
 					if (!latlng) {
 						this._div.innerHTML = '座標：滑鼠移入地圖';
 						return;
@@ -99,101 +198,217 @@
 					this._div.innerHTML = `座標：${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
 				}
 			});
-			const mousePositionControl = new MousePosition({
-				position: 'bottomleft'
+			new MousePosition().addTo(map);
+
+
+			// 標記樣式
+			const searchIcon = L.AwesomeMarkers.icon({ icon: "search", markerColor: "blue" });
+			const clickIcon = L.AwesomeMarkers.icon({ icon: "map-marker", markerColor: "red" });
+
+			const userMarker = L.marker(defaultCenter, { icon: searchIcon }).addTo(map).bindPopup("預設中心點").openPopup();
+			let clickMarker;
+
+
+			// 搜尋座標控制器
+			const SearchControl = L.Control.extend({
+				options: { position: "topright" },
+				onAdd: function (map) {
+					const div = L.DomUtil.create("div", "leaflet-control search-control");
+					div.innerHTML = `
+		<div class="search-toggle" title="搜尋座標">🔍</div>
+		<div class="search-panel">
+			<input id="coord-input" placeholder="25.03,121.56" type="text">
+			<button onclick="searchCoords()">搜尋</button>
+		</div>
+		`;
+
+					const panel = div.querySelector(".search-panel");
+
+					// 預設隱藏
+					panel.style.display = "none";
+
+					// 滑鼠移入 → 顯示，移出 → 隱藏
+					div.addEventListener("mouseenter", () => { panel.style.display = "block"; });
+					div.addEventListener("mouseleave", () => { panel.style.display = "none"; });
+
+					L.DomEvent.disableClickPropagation(div);
+					return div;
+				}
 			});
-			mousePositionControl.addTo(map);
+			map.addControl(new SearchControl());
 
-			function showMessage(msg) {
-				userMarker.bindPopup(msg).openPopup();
-			}
+			// GPX 上傳控制器
+			const UploadControl = L.Control.extend({
+				options: { position: "topright" },
+				onAdd: function (map) {
+					const div = L.DomUtil.create("div", "leaflet-control upload-control");
+					div.innerHTML = `
+		<div class="upload-toggle" title="GPX 工具">📂</div>
+		<div class="upload-panel">
+			<input type="file" id="gpxFile" accept=".gpx">
+			<button onclick="uploadGpx()">上傳 GPX</button>
+			<button onclick="clearGpx()">清除 GPX</button>
+		</div>
+		`;
 
-			function locateUser() {
-				if (navigator.geolocation) {
-					if (window.isSecureContext) {
-						navigator.geolocation.getCurrentPosition(function(pos) {
-							const lat = pos.coords.latitude;
-							const lng = pos.coords.longitude;
-							userPosDiv.innerHTML = `使用者座標：${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-							map.setView([lat, lng], 16);
-							userMarker.setLatLng([lat, lng]).bindPopup("📍 使用者位置").openPopup();
-						}, function(err) {
-							console.warn(`無法取得定位: ${err.message}`);
-							showMessage("⚠️ 無法取得定位，使用預設位置");
-						}, {
-							enableHighAccuracy: true,
-							timeout: 5000,
-							maximumAge: 0
-						});
-					} else {
-						showMessage("⚠️ 定位功能須 HTTPS 或 localhost 環境");
-					}
-				} else {
-					showMessage("⚠️ 瀏覽器不支援定位功能");
+					const panel = div.querySelector(".upload-panel");
+
+					// 預設隱藏
+					panel.style.display = "none";
+
+					// 滑鼠移入 → 顯示，移出 → 隱藏
+					div.addEventListener("mouseenter", () => { panel.style.display = "block"; });
+					div.addEventListener("mouseleave", () => { panel.style.display = "none"; });
+
+					L.DomEvent.disableClickPropagation(div);
+					return div;
 				}
-			}
-			
-			locateUser();
+			});
+			map.addControl(new UploadControl());
 
-			window.searchCoords = function() {
+
+
+			// 搜尋座標
+			window.searchCoords = function () {
 				const input = document.getElementById('coord-input').value.trim();
-				if (!input) {
-					alert("請輸入座標");
-					return;
-				}
+				if (!input) { alert("請輸入座標"); return; }
 				const parts = input.split(',');
-				if (parts.length !== 2) {
-					alert("格式錯誤，請輸入經緯度格式: lat,lng");
-					return;
-				}
+				if (parts.length !== 2) { alert("格式錯誤，請輸入 lat,lng"); return; }
 				const lat = parseFloat(parts[0]);
 				const lng = parseFloat(parts[1]);
-				if (isNaN(lat) || isNaN(lng)) {
-					alert("經緯度必須是數字");
-					return;
-				}
+				if (isNaN(lat) || isNaN(lng)) { alert("經緯度必須是數字"); return; }
 				map.setView([lat, lng], 16);
 				userMarker.setLatLng([lat, lng]).bindPopup("🔍 搜尋座標").openPopup();
-				userPosDiv.innerHTML = `使用者座標：${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 			};
-			window.locateUser = locateUser;
-			// Define projections
+
+			// 座標轉換 EPSG
 			proj4.defs("EPSG:3826", "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
 			proj4.defs("EPSG:3828", "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=clrk66 +units=m +no_defs");
-			let marker;
-			map.on("click", function(e) {
+
+			map.on("click", function (e) {
 				const latlng = e.latlng;
 				const wgs84 = [latlng.lng, latlng.lat];
 				const twd97 = proj4("EPSG:4326", "EPSG:3826", wgs84);
 				const twd67 = proj4("EPSG:4326", "EPSG:3828", wgs84);
 				const popupContent = `
-							  <b>座標格式：<\/b>
-						  <br>
-							  <button onclick="copyText('${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}')">WGS84: ${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}<\/button>
-							  <br>
-								  <button onclick="copyText('${twd97[1].toFixed(2)}, ${twd97[0].toFixed(2)}')">TWD97: ${twd97[1].toFixed(2)}, ${twd97[0].toFixed(2)}<\/button>
-								  <br>
-									  <button onclick="copyText('${twd67[1].toFixed(2)}, ${twd67[0].toFixed(2)}')">TWD67: ${twd67[1].toFixed(2)}, ${twd67[0].toFixed(2)}<\/button>
-						  `;
-				if (marker) {
-					marker.setLatLng(latlng).setPopupContent(popupContent).openPopup();
+      <b>座標格式：</b><br>
+      <button onclick="copyText('${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}', this)">
+        WGS84: ${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}
+      </button><br>
+      <button onclick="copyText('${twd97[1].toFixed(2)}, ${twd97[0].toFixed(2)}', this)">
+        TWD97: ${twd97[1].toFixed(2)}, ${twd97[0].toFixed(2)}
+      </button><br>
+      <button onclick="copyText('${twd67[1].toFixed(2)}, ${twd67[0].toFixed(2)}', this)">
+        TWD67: ${twd67[1].toFixed(2)}, ${twd67[0].toFixed(2)}
+      </button>
+    `;
+				if (clickMarker) {
+					clickMarker.setLatLng(latlng).setPopupContent(popupContent).openPopup();
 				} else {
-					marker = L.marker(latlng).addTo(map).bindPopup(popupContent).openPopup();
+					clickMarker = L.marker(latlng, { icon: clickIcon }).addTo(map).bindPopup(popupContent).openPopup();
 				}
 			});
-			
-			window.copyText = function(text) {
+
+			// 複製座標
+			window.copyText = function (text, btn) {
 				navigator.clipboard.writeText(text).then(() => {
-					alert("已複製座標：" + text);
+					const original = btn.innerText;
+					btn.innerText = "✅ 已複製";
+					setTimeout(() => { btn.innerText = original; }, 1000);
 				}).catch(err => {
 					alert("複製失敗：" + err);
 				});
 			};
-			
-			
+
+			// 瀏覽器定位
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(pos => {
+					const { latitude, longitude } = pos.coords;
+					map.setView([latitude, longitude], 16);
+					userMarker.setLatLng([latitude, longitude]).bindPopup("📍 目前位置").openPopup();
+				});
+			}
 		});
-		
-		
+
+		// 上傳 GPX
+		async function uploadGpx() {
+			const fileInput = document.getElementById("gpxFile");
+			if (!fileInput.files.length) {
+				alert("請選擇 GPX 檔案！");
+				return;
+			}
+
+			const file = fileInput.files[0];
+			const formData = new FormData();
+			formData.append("file", file);
+
+			try {
+				const res = await axios.post("http://www.raymond.tw:5000/upload_gpx", formData, {
+					headers: { "Content-Type": "multipart/form-data" }
+				});
+
+				const url = res.data.url;
+				const dataRes = await axios.get("http://www.raymond.tw:5000" + url);
+				const routes = dataRes.data.routes;
+
+				const colors = ["red", "blue", "green", "orange", "purple", "brown", "black", "pink"];
+				let allCoords = [];
+
+				routes.forEach((route, idx) => {
+					const color = colors[idx % colors.length];
+					const baseName = file.name.replace(/\.[^/.]+$/, ""); // 檔名去副檔名
+					const name = `${baseName}_${idx + 1}`;
+
+					// 如果同名圖層已存在，先移除
+					if (gpxLayers[name]) {
+						map.removeLayer(gpxLayers[name]);
+						if (overlayControl) {
+							overlayControl.removeLayer(gpxLayers[name]);
+						}
+					}
+
+					const polyline = L.polyline(route, { color: color, weight: 4 }).bindPopup(name);
+					polyline.addTo(map);
+					gpxLayers[name] = polyline;
+					allCoords = allCoords.concat(route);
+				});
+
+				// 更新圖層控制
+				if (!overlayControl) {
+					overlayControl = L.control.layers(null, gpxLayers, { collapsed: false }).addTo(map);
+				} else {
+					Object.keys(gpxLayers).forEach(name => {
+						overlayControl.addOverlay(gpxLayers[name], name);
+					});
+				}
+
+				if (allCoords.length > 0) {
+					map.fitBounds(L.latLngBounds(allCoords));
+				}
+
+				fileInput.value = ""; // 清空檔案選擇器
+				alert("GPX 路線已載入完成！");
+			} catch (err) {
+				console.error(err);
+				alert("上傳失敗！");
+			}
+		}
+
+		function clearGpx() {
+			Object.values(gpxLayers).forEach(layer => {
+				map.removeLayer(layer);
+			});
+			gpxLayers = {};
+
+			if (overlayControl) {
+				map.removeControl(overlayControl);
+				overlayControl = null;
+			}
+
+			alert("所有 GPX 路線已清除！");
+		}
 	</script>
+
 </body>
+
 </html>
