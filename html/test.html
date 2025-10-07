@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaflet 座標編輯與刪除</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✅ Leaflet CSS -->
+    <link rel="stylesheet" href="../css/leaflet.css" />
+
+    <!-- ✅ Leaflet JS -->
+    <script src="../js/leaflet-1.9.3.js"></script>
+
+    <!-- ✅ Proj4JS -->
+    <script src="../js/proj4-2.19.10-src.js"></script>
+
+    <style>
+        body { margin: 0; font-family: sans-serif; }
+        #map { height: 80vh; }
+        #controls {
+            padding: 10px;
+            background: #f8f8f8;
+            border-bottom: 1px solid #ccc;
+        }
+        input[type="text"] {
+            width: 250px;
+            margin-right: 5px;
+        }
+        #mouse-coords {
+            position: absolute;
+            pointer-events: none;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 999;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+<div id="controls">
+    <label for="coordType">座標格式：</label>
+    <select id="coordType">
+        <option value="WGS84_DEC">WGS84 十進位</option>
+        <option value="WGS84_DMS">WGS84 60進位</option>
+        <option value="TWD97">TWD97</option>
+        <option value="TWD67">TWD67</option>
+    </select>
+
+    <label for="coordInput">座標：</label>
+    <input type="text" id="coordInput" placeholder="例如：23.5,121 或 25 02 30,121 00 00">
+    <button onclick="addCoordinate()">新增座標</button>
+</div>
+
+<div id="map"></div>
+<div id="mouse-coords" style="display:none;"></div>
+
+<script>
+    const map = L.map('map').setView([23.5, 121], 8);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    proj4.defs("EPSG:3826", "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
+    proj4.defs("EPSG:3828", "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=GRS67 +units=m +no_defs");
+
+    const points = [];
+    const markers = [];
+    let polyline;
+
+    function dmsToDecimal(dmsStr) {
+        const parts = dmsStr.trim().split(/\s+/).map(Number);
+        if (parts.length < 3 || parts.some(isNaN)) return NaN;
+        return parts[0] + parts[1] / 60 + parts[2] / 3600;
+    }
+
+    function convertToWGS84(latStr, lngStr, format) {
+        let lat, lng;
+        if (format === "WGS84_DMS") {
+            lat = dmsToDecimal(latStr);
+            lng = dmsToDecimal(lngStr);
+        } else {
+            lat = parseFloat(latStr);
+            lng = parseFloat(lngStr);
+        }
+        if (isNaN(lat) || isNaN(lng)) return null;
+        switch (format) {
+            case "TWD97":
+                return proj4("EPSG:3826", "EPSG:4326", [lng, lat]).reverse();
+            case "TWD67":
+                return proj4("EPSG:3828", "EPSG:4326", [lng, lat]).reverse();
+            default:
+                return [lat, lng];
+        }
+    }
+
+    function redrawPolyline() {
+        if (polyline) map.removeLayer(polyline);
+        polyline = L.polyline(points, { color: 'blue' }).addTo(map);
+    }
+
+    function addCoordinate() {
+        const format = document.getElementById("coordType").value;
+        const input = document.getElementById("coordInput").value.trim();
+        const parts = input.split(",");
+        if (parts.length !== 2) {
+            alert("請使用逗號分隔緯度與經度");
+            return;
+        }
+
+        const latStr = parts[0].trim();
+        const lngStr = parts[1].trim();
+        const converted = convertToWGS84(latStr, lngStr, format);
+        if (!converted) {
+            alert("座標格式錯誤");
+            return;
+        }
+
+        points.push(converted);
+        const marker = L.marker(converted).addTo(map);
+        marker.bindPopup(createPopupContent(converted, marker)).openPopup();
+        markers.push(marker);
+        redrawPolyline();
+        map.panTo(converted);
+    }
+
+    function createPopupContent(coord, marker) {
+        const index = markers.indexOf(marker);
+        return `
+            <div>
+                <div>座標: ${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</div>
+                <button onclick="editPoint(${index})">編輯</button>
+                <button onclick="deletePoint(${index})">刪除</button>
+            </div>
+        `;
+    }
+
+    window.editPoint = function(index) {
+        const coord = points[index];
+        document.getElementById("coordInput").value = `${coord[0].toFixed(6)},${coord[1].toFixed(6)}`;
+        deletePoint(index);
+    };
+
+    window.deletePoint = function(index) {
+        map.removeLayer(markers[index]);
+        markers.splice(index, 1);
+        points.splice(index, 1);
+        redrawPolyline();
+    };
+
+    // 滑鼠座標追蹤
+    const mouseCoordsDiv = document.getElementById("mouse-coords");
+
+    map.on("mousemove", function (e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        const wgs = `WGS84: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        const twd97 = proj4("EPSG:4326", "EPSG:3826", [lng, lat]);
+        const twd67 = proj4("EPSG:4326", "EPSG:3828", [lng, lat]);
+        const twd97Str = `TWD97: ${twd97[1].toFixed(2)}, ${twd97[0].toFixed(2)}`;
+        const twd67Str = `TWD67: ${twd67[1].toFixed(2)}, ${twd67[0].toFixed(2)}`;
+        mouseCoordsDiv.innerHTML = `${wgs}<br>${twd97Str}<br>${twd67Str}`;
+        mouseCoordsDiv.style.display = "block";
+    });
+
+    map.getContainer().addEventListener("mousemove", function (e) {
+        mouseCoordsDiv.style.left = (e.clientX + 10) + "px";
+        mouseCoordsDiv.style.top = (e.clientY + 10) + "px";
+    });
+
+    map.on("mouseout", function () {
+        mouseCoordsDiv.style.display = "none";
+    });
+</script>
+
+</body>
+</html>

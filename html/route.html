@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Leaflet 座標編輯與拖曳</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ✅ Leaflet CSS -->
+    <link rel="stylesheet" href="../css/leaflet.css" />
+
+    <!-- ✅ Leaflet JS -->
+    <script src="../js/leaflet-1.9.3.js"></script>
+
+    <!-- ✅ Proj4JS -->
+    <script src="../js/proj4-2.19.10-src.js"></script>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: sans-serif;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        #toggleIcon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            cursor: move;
+            font-size: 20px;
+            user-select: none;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            max-height: 500px;
+            overflow: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #controls.collapsed {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+
+        #controlsHeader {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        #collapseIcon {
+            cursor: pointer;
+            font-size: 18px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #eee;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        #mouse-coords {
+            position: absolute;
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 999;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="toggleIcon" onclick="toggleControls()" title="展開控制面板">🛠️</div>
+
+    <div id="controls" class="collapsed">
+        <div id="controlsHeader">
+            <span id="collapseIcon" onclick="toggleControls()" title="縮小控制面板">➖</span>
+        </div>
+
+        <label for="coordType">座標格式：</label>
+        <select id="coordType">
+            <option value="WGS84_DEC">WGS84 十進位</option>
+            <option value="WGS84_DMS">WGS84 60進位</option>
+            <option value="TWD97">TWD97</option>
+            <option value="TWD67">TWD67</option>
+        </select>
+
+        <label for="batchInput">批次座標輸入（每行一筆）：</label><br>
+        <textarea id="batchInput" rows="5" cols="60" placeholder="例如：23.5,121 或 25 02 30,121 00 00"></textarea><br>
+        <button onclick="addBatchCoordinates()">批次新增</button>
+    </div>
+
+    <div id="map"></div>
+    <div id="mouse-coords" style="display:none;"></div>
+
+    <script>
+        const map = L.map('map').setView([23.5, 121], 8);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        proj4.defs("EPSG:3826", "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
+        proj4.defs("EPSG:3828", "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=GRS67 +units=m +no_defs");
+
+        const points = [];
+        const markers = [];
+        let polyline;
+
+        function dmsToDecimal(dmsStr) {
+            const parts = dmsStr.trim().split(/\s+/).map(Number);
+            if (parts.length < 3 || parts.some(isNaN)) return NaN;
+            return parts[0] + parts[1] / 60 + parts[2] / 3600;
+        }
+
+        function convertToWGS84(latStr, lngStr, format) {
+            let lat, lng;
+            if (format === "WGS84_DMS") {
+                lat = dmsToDecimal(latStr);
+                lng = dmsToDecimal(lngStr);
+            } else {
+                lat = parseFloat(latStr);
+                lng = parseFloat(lngStr);
+            }
+            if (isNaN(lat) || isNaN(lng)) return null;
+            switch (format) {
+                case "TWD97":
+                    return proj4("EPSG:3826", "EPSG:4326", [lng, lat]).reverse();
+                case "TWD67":
+                    return proj4("EPSG:3828", "EPSG:4326", [lng, lat]).reverse();
+                default:
+                    return [lat, lng];
+            }
+        }
+
+        function redrawPolyline() {
+            if (polyline) map.removeLayer(polyline);
+            polyline = L.polyline(points, { color: 'blue' }).addTo(map);
+        }
+
+        function addBatchCoordinates() {
+            const format = document.getElementById("coordType").value;
+            const input = document.getElementById("batchInput").value.trim();
+            const lines = input.split(/\r?\n/); // 支援 Windows/Linux 換行
+
+            lines.forEach((line, i) => {
+                const parts = line.split(",");
+                if (parts.length !== 2) {
+                    console.warn(`第 ${i + 1} 行格式錯誤：${line}`);
+                    return;
+                }
+
+                const latStr = parts[0].trim();
+                const lngStr = parts[1].trim();
+                const converted = convertToWGS84(latStr, lngStr, format);
+                if (!converted) {
+                    console.warn(`第 ${i + 1} 行座標轉換失敗：${line}`);
+                    return;
+                }
+
+                points.push(converted);
+                const index = points.length - 1;
+
+                const marker = L.marker(converted, { draggable: true }).addTo(map);
+                marker.bindPopup(createEditablePopup(index)).openPopup();
+                marker.on("dragend", function (e) {
+                    const newLatLng = e.target.getLatLng();
+                    points[index] = [newLatLng.lat, newLatLng.lng];
+                    marker.setPopupContent(createEditablePopup(index));
+                    redrawPolyline();
+                });
+
+                markers.push(marker);
+            });
+
+            redrawPolyline();
+            if (points.length > 0) map.panTo(points[points.length - 1]);
+
+            if (points.length > 0) {
+                const bounds = L.latLngBounds(points);
+                map.fitBounds(bounds);
+            }
+        }
+
+        function createEditablePopup(index) {
+            const coord = points[index];
+            return `
+            <div>
+                <div>座標: <input type="text" id="editCoord${index}" value="${coord[0].toFixed(6)},${coord[1].toFixed(6)}" style="width:150px;"></div>
+                <button onclick="saveEdit(${index})">儲存</button>
+                <button onclick="deletePoint(${index})">刪除</button>
+            </div>
+        `;
+        }
+
+        window.saveEdit = function (index) {
+            const input = document.getElementById(`editCoord${index}`).value.trim();
+            const parts = input.split(",");
+            if (parts.length !== 2) {
+                alert("請使用逗號分隔緯度與經度");
+                return;
+            }
+            const lat = parseFloat(parts[0]);
+            const lng = parseFloat(parts[1]);
+            if (isNaN(lat) || isNaN(lng)) {
+                alert("座標格式錯誤");
+                return;
+            }
+            points[index] = [lat, lng];
+            markers[index].setLatLng([lat, lng]);
+            markers[index].setPopupContent(createEditablePopup(index));
+            redrawPolyline();
+        };
+
+        window.deletePoint = function (index) {
+            map.removeLayer(markers[index]);
+            markers.splice(index, 1);
+            points.splice(index, 1);
+            redrawPolyline();
+        };
+
+        // 使用者定位
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const userLocation = [lat, lng];
+                    L.marker(userLocation).addTo(map).bindPopup("您目前的位置").openPopup();
+                    map.setView(userLocation, 15);
+                },
+                function (error) {
+                    console.warn("定位失敗：", error.message);
+                }
+            );
+        }
+
+        // 滑鼠座標追蹤
+        const mouseCoordsDiv = document.getElementById("mouse-coords");
+
+        map.on("mousemove", function (e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            const wgs = `WGS84: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            const twd97 = proj4("EPSG:4326", "EPSG:3826", [lng, lat]);
+            const twd67 = proj4("EPSG:4326", "EPSG:3828", [lng, lat]);
+            const twd97Str = `TWD97: ${twd97[1].toFixed(2)}, ${twd97[0].toFixed(2)}`;
+            const twd67Str = `TWD67: ${twd67[1].toFixed(2)}, ${twd67[0].toFixed(2)}`;
+            mouseCoordsDiv.innerHTML = `${wgs}<br>${twd97Str}<br>${twd67Str}`;
+            mouseCoordsDiv.style.display = "block";
+        });
+
+        map.getContainer().addEventListener("mousemove", function (e) {
+            mouseCoordsDiv.style.left = (e.clientX + 10) + "px";
+            mouseCoordsDiv.style.top = (e.clientY + 10) + "px";
+        });
+
+        map.on("mouseout", function () {
+            mouseCoordsDiv.style.display = "none";
+        });
+
+        function toggleControls() {
+            const controls = document.getElementById("controls");
+            const icon = document.getElementById("toggleIcon");
+
+            if (controls.classList.contains("collapsed")) {
+                controls.classList.remove("collapsed");
+                icon.style.display = "none";
+            } else {
+                controls.classList.add("collapsed");
+                icon.style.display = "block";
+            }
+        }
+
+        let isDragging = false;
+        let offsetX, offsetY;
+        let dragStartX, dragStartY;
+        let dragMoved = false;
+
+        const icon = document.getElementById("toggleIcon");
+
+        icon.addEventListener("mousedown", function (e) {
+            isDragging = true;
+            dragMoved = false;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            offsetX = e.clientX - icon.offsetLeft;
+            offsetY = e.clientY - icon.offsetTop;
+            icon.style.cursor = "grabbing";
+        });
+
+        document.addEventListener("mousemove", function (e) {
+            if (!isDragging) return;
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+                dragMoved = true;
+            }
+            icon.style.left = `${e.clientX - offsetX}px`;
+            icon.style.top = `${e.clientY - offsetY}px`;
+        });
+
+        document.addEventListener("mouseup", function (e) {
+            if (isDragging && !dragMoved) {
+                toggleControls(); // 只有在沒拖曳時才觸發點擊
+            }
+            isDragging = false;
+            icon.style.cursor = "move";
+        });
+
+
+
+    </script>
+
+</body>
+
+</html>
