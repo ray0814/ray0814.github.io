@@ -107,25 +107,17 @@
 
 <body>
 
-    <div id="toggleIcon" onclick="toggleControls()" title="展開控制面板">🛠️</div>
+    <div id="toggleIcon" title="展開控制面板">🛠️</div>
 
     <div id="controls" class="collapsed">
-        <div id="controlsHeader">
-            <span id="collapseIcon" onclick="toggleControls()" title="縮小控制面板">➖</span>
-        </div>
-
-        <label for="coordType">座標格式：</label>
-        <select id="coordType">
-            <option value="WGS84_DEC">WGS84 十進位</option>
-            <option value="WGS84_DMS">WGS84 60進位</option>
-            <option value="TWD97">TWD97</option>
-            <option value="TWD67">TWD67</option>
-        </select>
-
-        <label for="batchInput">批次座標輸入（每行一筆）：</label><br>
-        <textarea id="batchInput" rows="5" cols="60" placeholder="例如：23.5,121 或 25 02 30,121 00 00"></textarea><br>
-        <button onclick="addBatchCoordinates()">批次新增</button>
+          <div id="controlsHeader">
+                <span id="collapseIcon" onclick="toggleControls()" title="縮小控制面板">➖</span>
+              </div>
+          <div id="coordRows"></div>
+          <button onclick="addCoordRow()">新增</button>
+          <button onclick="confirmCoordinates()">確認</button>
     </div>
+
 
     <div id="map"></div>
     <div id="mouse-coords" style="display:none;"></div>
@@ -308,13 +300,15 @@
             }
         }
 
+        // 用於判斷點擊或拖曳
         let isDragging = false;
-        let offsetX, offsetY;
-        let dragStartX, dragStartY;
         let dragMoved = false;
+        let dragStartX, dragStartY;
+        let offsetX, offsetY;
 
         const icon = document.getElementById("toggleIcon");
 
+        // 只用 mousedown/mouseup，不在 icon 上設 onclick
         icon.addEventListener("mousedown", function (e) {
             isDragging = true;
             dragMoved = false;
@@ -323,27 +317,104 @@
             offsetX = e.clientX - icon.offsetLeft;
             offsetY = e.clientY - icon.offsetTop;
             icon.style.cursor = "grabbing";
+            e.preventDefault();
         });
 
         document.addEventListener("mousemove", function (e) {
             if (!isDragging) return;
             const dx = e.clientX - dragStartX;
             const dy = e.clientY - dragStartY;
+            // 若移動3px以上，視為拖曳
             if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
                 dragMoved = true;
+                icon.style.left = `${e.clientX - offsetX}px`;
+                icon.style.top = `${e.clientY - offsetY}px`;
             }
-            icon.style.left = `${e.clientX - offsetX}px`;
-            icon.style.top = `${e.clientY - offsetY}px`;
         });
 
         document.addEventListener("mouseup", function (e) {
-            if (isDragging && !dragMoved) {
-                toggleControls(); // 只有在沒拖曳時才觸發點擊
+            if (isDragging) {
+                // 只有沒拖曳（點擊）才展開/收合控制面板
+                if (!dragMoved) {
+                    toggleControls();
+                }
+                isDragging = false;
+                icon.style.cursor = "move";
             }
-            isDragging = false;
-            icon.style.cursor = "move";
         });
 
+        function addCoordRow() {
+            const idx = document.querySelectorAll("#coordRows .coord-row").length;
+            const coordRow = document.createElement("div");
+            coordRow.className = "coord-row";
+            coordRow.innerHTML = `
+    <select class="coord-type">
+      <option value="WGS84_DEC">WGS84 十進位</option>
+      <option value="WGS84_DMS">WGS84 60進位</option>
+      <option value="TWD97">TWD97</option>
+      <option value="TWD67">TWD67</option>
+    </select>
+    <input type="text" class="coord-input" placeholder="座標輸入，格式依選擇座標系而異" style="width:180px;">
+    <button onclick="this.parentElement.remove()">移除</button>
+  `;
+            document.getElementById("coordRows").appendChild(coordRow);
+        }
+
+        // 初始化就先有一筆欄位
+        addCoordRow();
+
+        function confirmCoordinates() {
+            points.length = 0;
+            markers.forEach(m => map.removeLayer(m));
+            markers.length = 0;
+            if (polyline) map.removeLayer(polyline);
+
+            const rows = document.querySelectorAll("#coordRows .coord-row");
+            rows.forEach((row, i) => {
+                const format = row.querySelector(".coord-type").value;
+                const inputVal = row.querySelector(".coord-input").value.trim();
+
+                let lat, lng;
+                if (format === "WGS84_DMS") {
+                    // WGS84 60進位格式示例："25 02 30, 121 00 00"
+                    const parts = inputVal.split(",");
+                    if (parts.length === 2) {
+                        lat = dmsToDecimal(parts[0].trim());
+                        lng = dmsToDecimal(parts[1].trim());
+                    } else {
+                        console.warn(`第 ${i + 1} 行DMS格式錯誤，應為 '度 分 秒, 度 分 秒'`);
+                        return;
+                    }
+                } else {
+                    // 其他格式逗號分隔："緯度,經度"
+                    const parts = inputVal.split(",");
+                    if (parts.length === 2) {
+                        lat = parseFloat(parts[0]);
+                        lng = parseFloat(parts[1]);
+                    } else {
+                        console.warn(`第 ${i + 1} 行座標格式錯誤`);
+                        return;
+                    }
+                }
+
+                const converted = convertToWGS84(lat, lng, format);
+                if (converted) {
+                    points.push(converted);
+                    const marker = L.marker(converted, { draggable: true }).addTo(map);
+                    marker.bindPopup(createEditablePopup(points.length - 1)).openPopup();
+                    marker.on("dragend", function (e) {
+                        const newLatLng = e.target.getLatLng();
+                        points[i] = [newLatLng.lat, newLatLng.lng];
+                        marker.setPopupContent(createEditablePopup(i));
+                        redrawPolyline();
+                    });
+                    markers.push(marker);
+                }
+            });
+
+            redrawPolyline();
+            if (points.length > 0) map.fitBounds(L.latLngBounds(points));
+        }
 
 
     </script>
