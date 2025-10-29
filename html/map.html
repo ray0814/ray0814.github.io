@@ -340,16 +340,20 @@
 
 			const file = fileInput.files[0];
 			const formData = new FormData();
-			formData.append("file", file);
+			// formData.append("file", file);
+			for (let f = 0; f < fileInput.files.length; f++) {
+				formData.append("files", fileInput.files[f]); // 注意 key 是 "files"
+			}
 
 			try {
-				const res = await axios.post("http://www.raymond.tw:5000/upload_gpx", formData, {
+				const res = await axios.post("http://www.raymond.tw:5000/merge_gpx", formData, {
 					headers: { "Content-Type": "multipart/form-data" }
 				});
 
 				const url = res.data.url;
 				const dataRes = await axios.get("http://www.raymond.tw:5000" + url);
-				const routes = dataRes.data.routes;
+				console.log(dataRes.data);
+				// const routes = dataRes.data.routes;
 
 				const colors = ["red", "blue", "green", "orange", "purple", "brown", "black", "pink"];
 				let allCoords = [];
@@ -387,10 +391,10 @@
 				}
 
 				fileInput.value = ""; // 清空檔案選擇器
-				alert("GPX 路線已載入完成！");
+				// alert("GPX 路線已載入完成！");
 			} catch (err) {
 				console.error(err);
-				alert("上傳失敗！");
+				// alert("上傳失敗！");
 			}
 		}
 
